@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talkdesk Ultimate SE Docs Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --td-purple: #4a154b;
+            --td-purple-dark: #2d0a31;
+            --td-purple-mid: #6b2d6d;
+            --td-accent: #c95dc8;
+            --td-bg: #f8f5f9;
+            --td-border: #e8e0e9;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--td-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            width: 100%;
+            background: linear-gradient(135deg, var(--td-purple-dark) 0%, var(--td-purple) 60%, var(--td-purple-mid) 100%);
+            color: white;
+            padding: 36px 0 50px;
+            text-align: center;
+        }
+        header h1 { margin: 0 0 8px; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+        header p { margin: 0; opacity: 0.75; font-size: 13px; }
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 11px;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+        .container {
+            width: 98%;
+            max-width: 1700px;
+            margin: -28px auto 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(74, 21, 75, 0.08);
+            border: 1px solid var(--td-border);
+        }
+        h2 {
+            color: var(--td-purple);
+            font-size: 11px;
+            margin: 0 0 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--td-bg);
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h2 .step-badge {
+            background: var(--td-purple);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+        textarea {
+            width: 100%;
+            height: 520px;
+            padding: 14px;
+            border: 1.5px solid var(--td-border);
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            color: #333;
+            transition: border-color 0.2s;
+        }
+        textarea:focus { outline: none; border-color: var(--td-accent); }
+        textarea::placeholder { color: #aaa; }
+        .btn-group { display: grid; grid-template-columns: 3fr 1fr; gap: 10px; }
+        .btn {
+            background: linear-gradient(135deg, var(--td-purple) 0%, var(--td-purple-mid) 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+            letter-spacing: 0.2px;
+        }
+        .btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(74,21,75,0.3); }
+        .btn-clear {
+            background: var(--td-bg);
+            color: #666;
+            border: 1.5px solid var(--td-border);
+        }
+        .btn-clear:hover { background: #ede8ee; box-shadow: none; }
+        .output-box {
+            background: #fdfcfd;
+            border: 1.5px solid var(--td-border);
+            border-radius: 10px;
+            padding: 18px 18px 10px;
+            min-height: 600px;
+            color: #1d1d1f;
+            font-size: 13px;
+        }
+        /* Top action bar */
+        .output-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .copy-all-btn {
+            background: var(--td-purple);
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 7px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .copy-all-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+        .copy-all-btn.copied { background: #2d8a4e; }
+        /* Per-section blocks */
+        .result-section {
+            background: white;
+            border: 1.5px solid var(--td-border);
+            border-radius: 9px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .result-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px 9px 14px;
+            background: #f7f2f8;
+            border-bottom: 1.5px solid var(--td-border);
+            gap: 8px;
+        }
+        .result-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--td-purple);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section-copy-btn {
+            background: white;
+            border: 1px solid var(--td-border);
+            padding: 3px 11px;
+            border-radius: 5px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--td-purple);
+            transition: all 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .section-copy-btn:hover { background: var(--td-purple); color: white; border-color: var(--td-purple); }
+        .section-copy-btn.copied { background: #2d8a4e; color: white; border-color: #2d8a4e; }
+        .result-section-urls {
+            padding: 10px 14px 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11.5px;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            color: #333;
+        }
+        .result-section-urls a {
+            color: #5a0e6e;
+            text-decoration: none;
+        }
+        .result-section-urls a:hover { text-decoration: underline; }
+        /* Placeholder / empty state */
+        #outputPlaceholder {
+            color: #bbb;
+            font-size: 13px;
+            padding: 40px 10px;
+            text-align: center;
+            font-family: inherit;
+        }
+        .match-count {
+            font-family: inherit;
+            font-size: 11px;
+            color: var(--td-purple);
+            background: #f0e8f0;
+            border-radius: 20px;
+            padding: 2px 10px;
+            margin-bottom: 14px;
+            display: none;
+            width: fit-content;
+        }
+        .section-label {
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            margin: 14px 0 4px;
+        }
+        /* Category filter chips */
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 16px;
+        }
+        .chip {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--td-border);
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+        .chip:hover, .chip.active {
+            background: var(--td-purple);
+            color: white;
+            border-color: var(--td-purple);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Talkdesk SE Docs Engine</h1>
+    <p>The Comprehensive Solutions Engineering Documentation Repository</p>
+    <div class="version-badge">V24 — Section Copy Edition</div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2><span class="step-badge">1</span>Paste Requirements or RFP Question</h2>
+        <div class="filter-row" id="filterRow">
+            <button class="chip active" onclick="toggleFilter(this, 'all')">All</button>
+            <button class="chip" onclick="toggleFilter(this, 'studio')">Studio</button>
+            <button class="chip" onclick="toggleFilter(this, 'integrations')">Integrations</button>
+            <button class="chip" onclick="toggleFilter(this, 'appconnect')">AppConnect</button>
+            <button class="chip" onclick="toggleFilter(this, 'data-dictionary')">Data Dictionary</button>
+            <button class="chip" onclick="toggleFilter(this, 'docs-api')">Docs / APIs</button>
+            <button class="chip" onclick="toggleFilter(this, 'support')">Support</button>
+        </div>
+        <textarea id="userInput" placeholder="Paste RFP, question, or technical requirements here...
+
+Examples:
+- 'Does Talkdesk integrate with Salesforce and ServiceNow?'
+- 'How does callback from queue work in Studio?'
+- 'What APIs are available for user management and reporting?'
+- 'Do you have workforce management and WFM APIs?'"></textarea>
+        <div class="btn-group">
+            <button class="btn" onclick="processQuery()">⚡ Generate Documentation Links</button>
+            <button class="btn btn-clear" onclick="clearAll()">Clear</button>
+        </div>
+    </div>
+    <div class="card">
+        <h2><span class="step-badge">2</span>Relevant Documentation Links</h2>
+        <div class="match-count" id="matchCount"></div>
+        <div class="output-box" id="outputBox">
+            <div class="output-actions" id="outputActions" style="display:none;">
+                <span style="font-size:11px;color:#999;font-family:inherit;">Click any section's button to copy just that group</span>
+                <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">⎘ Copy All</button>
+            </div>
+            <div id="outputSections"></div>
+            <div id="outputPlaceholder">Documentation links will generate based on your input above...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// ACTIVE FILTER
+// ============================================================
+let activeFilter = 'all';
+function toggleFilter(el, category) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    activeFilter = category;
+}
+
+// ============================================================
+// MASTER DOC MAP
+// Each entry: { keys: [...], urls: [...], category: '...' }
+// categories: studio | integrations | appconnect | data-dictionary | docs-api | support
+// ============================================================
+const docMap = [
+
+    // =========================================================
+    // STUDIO — INTRO & MANAGING FLOWS
+    // =========================================================
+    { keys: ['studio intro', 'what is studio', 'studio overview', 'talkdesk studio'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/talkdesk-studio-intro'] },
+    { keys: ['studio permissions', 'studio governance', 'studio access'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/permissions-to-use-studio-flows-and-modules'] },
+    { keys: ['flow types', 'incoming call flow', 'api flow', 'outgoing call flow', 'digital flow'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/flow-types'] },
+    { keys: ['studio getting started', 'getting started studio'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/getting-started-studio'] },
+    { keys: ['account settings studio', 'studio account settings'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/account-level-settings-that-impact-studio'] },
+    { keys: ['studio service quotas', 'studio limits'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/service-quotas-studio'] },
+    { keys: ['migrate classic ivr', 'migration ivr studio'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/migration-guide-classic-ivr-to-studio'] },
+    { keys: ['compare flow versions', 'studio versioning'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/compare-and-display-the-differences-between-studio-flow-versions'] },
+    { keys: ['archiving audio', 'archive audio file'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/archiving-an-audio-file'] },
+    { keys: ['assign flow to number', 'assigning flow number'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/assigning-a-flow-to-a-number'] },
+    { keys: ['delete flow', 'deleting flows'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/delete-flows'] },
+    { keys: ['studio context shared', 'shared context flows'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/enable-studio-context-to-be-shared-between-flows-voice'] },
+    { keys: ['error handling studio', 'studio errors'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/error-handling'] },
+    { keys: ['flow status', 'flow versions', 'flow statuses'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/flow-status-and-versions'] },
+    { keys: ['flow step search'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/flow-step-search'] },
+    { keys: ['studio functions', 'run function', 'lambda'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/functions', 'https://studio.talkdesk.com/docs/run-function'] },
+    { keys: ['import export flow', 'importing flow', 'exporting flow'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/importing-and-exporting-flows'] },
+    { keys: ['studio loops', 'loop component'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/loops'] },
+    { keys: ['modules', 'run module', 'begin module', 'studio module'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/modules', 'https://studio.talkdesk.com/docs/run-module', 'https://studio.talkdesk.com/docs/begin-module'] },
+    { keys: ['prompts', 'studio prompts', 'audio prompts'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/prompts'] },
+    { keys: ['component upgrade', 'upgrading components'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/components-upgrades'] },
+    { keys: ['studio filters', 'using filters'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/using-filters'] },
+
+    // =========================================================
+    // STUDIO — COMPONENTS (COMPLETE LIST)
+    // =========================================================
+    { keys: ['analyze digital message', 'navigator digital', 'digital nlp', 'intent digital'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/analyze-digital-message'] },
+    { keys: ['analyze voice message', 'navigator voice', 'voice nlp', 'intent voice', 'speech recognition routing'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/analyze-voice-message'] },
+    { keys: ['api request', 'api call studio', 'rest call studio', 'http request studio', 'external api studio'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/api-request'] },
+    { keys: ['assign agents to message', 'digital agent assignment'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/assign-agents-to-message'] },
+    { keys: ['assignment and dial', 'assignment dial', 'assign and dial'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/assignment-dial'] },
+    { keys: ['assignment selection', 'agent selection', 'ring selection', 'routing assignment'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/assignment-selection'] },
+    { keys: ['authenticate voice', 'voice authentication', 'voice biometric', 'biometric auth'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/authenticate-voice'] },
+    { keys: ['auto-answer', 'auto answer component'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/auto-answer'] },
+    { keys: ['automated message', 'outbound message', 'sms outbound', 'proactive notification'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/automated-message'] },
+    { keys: ['calendar based rules', 'holiday schedule', 'calendar routing'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/calendar-based-rules'] },
+    { keys: ['conditional statement', 'branching logic', 'if condition', 'conditional routing', 'logic branch'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/conditional-statement'] },
+    { keys: ['connect to autopilot digital', 'autopilot digital', 'chatbot studio', 'digital bot'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/connect-to-autopilot-digital'] },
+    { keys: ['connect to autopilot voice', 'autopilot voice', 'voice bot', 'conversational ai studio'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/connect-to-autopilot-voice'] },
+    { keys: ['dial agent', 'dial to agent'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/dial-agent'] },
+    { keys: ['digital estimated waiting time', 'digital ewt', 'ewt digital'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/digital-estimated-waiting-time'] },
+    { keys: ['end flow', 'hangup', 'hang up', 'end call'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/end-flow', 'https://studio.talkdesk.com/docs/hangup'] },
+    { keys: ['enroll voice', 'voice enrollment', 'biometric enrollment'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/enroll-voice'] },
+    { keys: ['estimated waiting time', 'ewt', 'wait time component', 'queue wait time'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/estimated-waiting-time'] },
+    { keys: ['execute action', 'data dip', 'ctd', 'screen pop studio'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/execute-action'] },
+    { keys: ['forward to external number', 'forward external', 'transfer external', 'cold transfer'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/forward-to-external-number'] },
+    { keys: ['forward to phone', 'forward phone'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/forward-to-phone-1'] },
+    { keys: ['get sms feedback', 'sms survey', 'sms csat', 'sms feedback'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/get-feedback-by-sms'] },
+    { keys: ['get voice feedback', 'voice survey', 'voice csat', 'post call survey', 'csat survey', 'nps survey'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/get-voice-feedback'] },
+    { keys: ['incoming call component'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/incoming-call'] },
+    { keys: ['incoming message component'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/incoming-message'] },
+    { keys: ['input ivr', 'dtmf', 'touch tone', 'keypad input', 'digits input'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/input-ivr'] },
+    { keys: ['make outbound call', 'outbound call component', 'place outbound call'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/make-outbound-call'] },
+    { keys: ['outgoing call component'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/outgoing-call'] },
+    { keys: ['play audio', 'play message', 'audio playback', 'tts', 'text to speech'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/play-audio'] },
+    { keys: ['record component', 'call recording studio', 'record audio'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/record'] },
+    { keys: ['reporting component', 'studio reporting'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/reporting'] },
+    { keys: ['request callback from queue', 'callback queue', 'queue callback', 'virtual queue callback'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/request-callback-from-queue'] },
+    { keys: ['request direct callback', 'direct callback', 'callback component'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/request-direct-callback'] },
+    { keys: ['return to flow', 'return flow component'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/return-to-flow'] },
+    { keys: ['salesforce data dip', 'sfdc data dip', 'salesforce screen pop', 'crm data dip'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/salesforce-data-dip'] },
+    { keys: ['send to inbox', 'inbox routing', 'digital inbox'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/send-to-inbox'] },
+    { keys: ['set sip headers', 'sip headers', 'sip variables'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/set-sip-headers'] },
+    { keys: ['set whisper message', 'whisper message', 'agent whisper'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/set-whisper-message'] },
+    { keys: ['standard ivr', 'ivr menu', 'voice ivr', 'ivr', 'interactive voice response'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/standard-ivr', 'https://studio.talkdesk.com/docs/voice-ivr'] },
+    { keys: ['stream audio', 'stream audio unidirectional', 'audio streaming'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/stream-audio-unidirectional'] },
+    { keys: ['time based rules', 'business hours', 'hours of operation', 'open hours routing', 'time routing'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/time-based-rules'] },
+    { keys: ['traffic splitter', 'a/b routing', 'ab testing routing', 'split traffic'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/traffic-splitter'] },
+    { keys: ['trigger salesforce omni-channel', 'omni-channel flow', 'salesforce omni', 'sfdc omni'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/trigger-salesforce-omni-channel-flow'] },
+    { keys: ['trigger salesforce unified routing', 'salesforce unified routing', 'sfdc unified routing'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/trigger-salesforce-unified-routing'] },
+    { keys: ['validate phone digital'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/validate-phone-digital'] },
+    { keys: ['validate phone voice', 'validate phone', 'phone validation'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/validate-phone-voice'] },
+    { keys: ['voicemail', 'voicemail component', 'voicemail drop', 'leave voicemail'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/voicemail'] },
+    { keys: ['voice transcription', 'transcription studio', 'live transcription studio'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/voice-transcription'] },
+
+    // =========================================================
+    // STUDIO — USE CASES
+    // =========================================================
+    { keys: ['assign call case owner', 'case owner routing', 'salesforce case routing'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/assigning-a-call-to-the-salesforce-case-owner'] },
+    { keys: ['same agent routing', 'assign same agent', 'preferred agent'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/assigning-a-call-to-the-same-agent'] },
+    { keys: ['chained routing', 'overflow routing', 'escalation routing'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/chained-routing'] },
+    { keys: ['compliance recording', 'compliant recording', 'gdpr recording'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/compliance-call-recording'] },
+    { keys: ['contingency routing', 'disaster recovery routing', 'backup routing'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/configuring-a-contingency-routing-plan'] },
+    { keys: ['waiting message', 'queue message', 'hold message'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/configuring-a-waiting-message'] },
+    { keys: ['extensions', 'extension routing', 'dial by extension'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/extensions'] },
+    { keys: ['vip routing', 'priority routing', 'prioritize vip', 'high value routing'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/prioritizing-calls-from-vips-in-salesforce'] },
+    { keys: ['multilevel ivr', 'multi-level ivr', 'nested ivr'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/multilevel-ivr'] },
+    { keys: ['call prioritization', 'priority queue', 'queue prioritization'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/call-prioritization'] },
+    { keys: ['studio variables', 'working with variables', 'flow variables'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/working-with-variables'] },
+    { keys: ['studio faq', 'studio faqs', 'studio questions'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/faqs'] },
+    { keys: ['amazon polly', 'polly tts', 'text to speech voice'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/text-to-speech-powered-by-amazon-polly'] },
+    { keys: ['using external api', 'api data studio', 'data from api'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/using-data-from-external-apis'] },
+    { keys: ['bpo routing', 'traffic splitter bpo', 'partner routing'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/traffic-splitter-for-bpos'] },
+
+    // =========================================================
+    // INTEGRATIONS — SUPPORT.TALKDESK.COM (FULL LIST)
+    // =========================================================
+    { keys: ['salesforce', 'sfdc', 'sfsc', 'salesforce service cloud', 'salesforce crm', 'salesforce integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364423-Talkdesk-for-Salesforce'] },
+    { keys: ['zendesk', 'zendesk integration', 'zendesk crm', 'zendesk connector'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364463-Talkdesk-Zendesk-Connector'] },
+    { keys: ['servicenow', 'service now', 'snow integration', 'servicenow connector', 'itsm'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360002196652-Talkdesk-ServiceNow-Connector'] },
+    { keys: ['slack', 'slack integration', 'slack connector', 'slack notifications'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360000445723-Talkdesk-for-Slack'] },
+    { keys: ['hubspot', 'hub spot', 'hubspot crm', 'hubspot connector', 'hubspot integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360002361131-Talkdesk-HubSpot-Connector'] },
+    { keys: ['microsoft teams', 'ms teams', 'teams integration', 'teams calling'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/articles/360039257652-Talkdesk-for-Microsoft-Teams'] },
+    { keys: ['dynamics 365', 'd365', 'microsoft dynamics', 'dynamics crm', 'ms dynamics'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360002010871-Talkdesk-Microsoft-Dynamics-365-Connector'] },
+    { keys: ['oracle service cloud', 'oracle crm', 'oracle integration', 'rightnow'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360002229592-Talkdesk-Oracle-Service-Cloud-Connector'] },
+    { keys: ['zoom', 'zoom integration', 'zoom connector'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360001002392-Talkdesk-Zoom-Connector'] },
+    { keys: ['workato', 'workato connector', 'workato integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360000306371-Talkdesk-Workato-Connector'] },
+    { keys: ['outreach', 'outreach.io', 'outreach integration', 'sales engagement'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360010468491-Talkdesk-Outreach-Connector'] },
+    { keys: ['freshdesk', 'freshdesk connector', 'freshdesk integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364483-Talkdesk-Freshdesk-Connector'] },
+    { keys: ['desk.com', 'desk com'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364443-Talkdesk-Desk.com-Connector'] },
+    { keys: ['highrise crm', 'highrise'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364503-Talkdesk-Highrise-Connector'] },
+    { keys: ['kustomer', 'kustomer crm', 'kustomer integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360001226372-Talkdesk-Kustomer-Connector'] },
+    { keys: ['zoho', 'zoho crm', 'zoho connector', 'zoho integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364593-Talkdesk-Zoho-Connector'] },
+    { keys: ['intercom', 'intercom integration', 'intercom connector'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360001080271-Talkdesk-Intercom-Connector'] },
+    { keys: ['pipedrive', 'pipedrive crm', 'pipedrive integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364513-Talkdesk-Pipedrive-Connector'] },
+    { keys: ['nimble crm', 'nimble'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364523-Talkdesk-Nimble-Connector'] },
+    { keys: ['bigcommerce', 'big commerce'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364553-Talkdesk-BigCommerce-Connector'] },
+    { keys: ['shopify', 'shopify integration', 'ecommerce integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364573-Talkdesk-Shopify-Connector'] },
+    { keys: ['google contacts', 'google integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364583-Talkdesk-Google-Contacts-Connector'] },
+    { keys: ['olark', 'olark integration'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364613-Talkdesk-Olark-Connector'] },
+    { keys: ['magento', 'magento integration', 'magento ecommerce'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360001234492-Talkdesk-Magento-Connector'] },
+    { keys: ['contact list integration', 'contact sync'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/200056629-Integrations-Connections'] },
+    { keys: ['sso', 'single sign on', 'saml', 'okta', 'azure ad sso', 'identity provider'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/articles/206190867-SSO-Overview'] },
+    { keys: ['active directory', 'ldap', 'directory sync'], category: 'integrations',
+      urls: ['https://support.talkdesk.com/hc/en-us/articles/206190867-SSO-Overview'] },
+
+    // =========================================================
+    // APPCONNECT — GENERAL (fallback for broad queries)
+    // =========================================================
+    { keys: ['appconnect', 'marketplace', 'app connect', 'partner apps', 'talkdesk apps', 'talkdesk marketplace', 'third party apps'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/'] },
+
+    // =========================================================
+    // APPCONNECT — CRM, SALES & MARKETING
+    // =========================================================
+    { keys: ['salesforce appconnect', 'talkdesk for salesforce', 'salesforce cti', 'salesforce screen pop appconnect', 't4s', 'talkdesk salesforce app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/salesforce'] },
+    { keys: ['zendesk appconnect', 'talkdesk for zendesk', 'zendesk cti', 'zendesk app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/zendesk'] },
+    { keys: ['servicenow appconnect', 'talkdesk for servicenow', 'servicenow cti', 'servicenow app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/servicenow'] },
+    { keys: ['hubspot appconnect', 'talkdesk for hubspot', 'hubspot cti', 'hubspot app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/hubspot'] },
+    { keys: ['dynamics 365 appconnect', 'microsoft dynamics appconnect', 'dynamics cti', 'dynamics app', 'dynamics appconnect'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/microsoft-dynamics-365'] },
+    { keys: ['freshdesk appconnect', 'talkdesk for freshdesk', 'freshdesk cti', 'freshdesk app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/freshdesk'] },
+    { keys: ['zoho appconnect', 'zoho crm appconnect', 'talkdesk zoho', 'zoho cti'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/zoho-crm'] },
+    { keys: ['intercom appconnect', 'talkdesk for intercom', 'intercom cti', 'intercom app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/intercom'] },
+    { keys: ['kustomer appconnect', 'talkdesk for kustomer', 'kustomer cti'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/kustomer'] },
+    { keys: ['front appconnect', 'talkdesk for front', 'front helpdesk app', 'front crm app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/front'] },
+    { keys: ['keap appconnect', 'infusionsoft appconnect', 'keap crm app', 'talkdesk keap'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/keap'] },
+    { keys: ['pipedrive appconnect', 'talkdesk for pipedrive', 'pipedrive cti'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/pipedrive'] },
+    { keys: ['shopify appconnect', 'talkdesk for shopify', 'shopify ecommerce app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/shopify'] },
+    { keys: ['outreach appconnect', 'talkdesk for outreach', 'outreach sales app', 'outreach.io app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/outreach'] },
+    { keys: ['sms-magic', 'sms magic converse', 'salesforce sms app', 'text messaging salesforce app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/sms-magic-converse'] },
+
+    // =========================================================
+    // APPCONNECT — ENTERPRISE COLLABORATION
+    // =========================================================
+    { keys: ['microsoft teams appconnect', 'talkdesk for teams', 'teams cti app', 'teams collaboration app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/microsoft-teams'] },
+    { keys: ['slack appconnect', 'talkdesk for slack', 'slack notifications app', 'slack app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/slack'] },
+    { keys: ['zoom appconnect', 'talkdesk for zoom', 'zoom video app', 'zoom connector'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/zoom'] },
+    { keys: ['workato appconnect', 'talkdesk for workato', 'workato automation app', 'workato connector'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/workato'] },
+
+    // =========================================================
+    // APPCONNECT — WORKFORCE ENGAGEMENT (WFM, QM, COACHING)
+    // =========================================================
+    { keys: ['calabrio wfm appconnect', 'calabrio workforce management app', 'calabrio wfm app', 'calabrio scheduling'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/calabrio-wfm'] },
+    { keys: ['calabrio teleopti appconnect', 'teleopti wfm app', 'calabrio teleopti app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/calabrio-teleopti-workforce-management'] },
+    { keys: ['calabrio analytics appconnect', 'calabrio speech analytics app', 'calabrio interaction analytics'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/calabrio-analytics'] },
+    { keys: ['calabrio quality management appconnect', 'calabrio qm app', 'calabrio quality assurance app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/calabrio-quality-management'] },
+    { keys: ['verint wfm appconnect', 'verint workforce management app', 'verint wfm app', 'verint scheduling app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/verint-workforce-management'] },
+    { keys: ['verint wfm professional appconnect', 'verint workforce management professional'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/verint-workforce-management-professional'] },
+    { keys: ['verint cm pro appconnect', 'verint cm pro connector', 'verint case management'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/talkdesk-verint-cm-pro-connector'] },
+    { keys: ['observe.ai appconnect', 'observe ai app', 'observeai coaching', 'observe ai conversation intelligence', 'observe.ai quality'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/observe-ai-agent-assist'] },
+    { keys: ['tethr appconnect', 'tethr conversation intelligence', 'tethr analytics app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/tethr'] },
+    { keys: ['scorebuddy appconnect', 'scorebuddy qa app', 'scorebuddy quality assurance app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/scorebuddy-all-in-one-staff-quality-assessment'] },
+    { keys: ['c2perform appconnect', 'c2perform knowledge base app', 'c2perform coaching app', 'c2perform lms'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/c2perform-knowledgebase'] },
+    { keys: ['assembled appconnect', 'assembled wfm app', 'assembled workforce management', 'assembled scheduling'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/assembled'] },
+    { keys: ['ttec digital wfm adapter', 'wfm adapter ttec', 'third party wfm adapter', 'wfm rta adapter'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/wfm-adapter-by-ttec-digital'] },
+    { keys: ['motivarnos appconnect', 'motivarnos gamification app', 'gamification appconnect'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/motivarnos'] },
+    { keys: ['tap my back appconnect', 'employee recognition app', 'agent recognition app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/tap-my-back'] },
+    { keys: ['compas appconnect', 'compas coaching app', 'agent performance coaching app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/compas'] },
+    { keys: ['authority software appconnect', 'authority center app', 'authority wfm qm app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/authority-center'] },
+
+    // =========================================================
+    // APPCONNECT — SELF-SERVICE / VIRTUAL AGENTS
+    // =========================================================
+    { keys: ['omilia appconnect', 'omilia conversational voice', 'omilia ivr app', 'omilia virtual agent'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/omilia-conversational-voice'] },
+    { keys: ['replicant voice appconnect', 'replicant virtual agent', 'replicant voice ai app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/replicant-voice'] },
+    { keys: ['smartaction appconnect', 'smartaction virtual agent', 'ai powered virtual agents app', 'smartaction voice'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/ai-powered-virtual-agents-for-voice'] },
+    { keys: ['pypestream appconnect', 'pypestream chatbot app', 'pypestream conversational ai'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/pypestream'] },
+    { keys: ['teneo appconnect', 'artificial solutions teneo', 'teneo conversational ai app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/artificial-solutions-teneo'] },
+    { keys: ['atomchat appconnect', 'atom chat app', 'atomchat whatsapp bot'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/atomchat'] },
+    { keys: ['zappix visual ivr appconnect', 'visual ivr app', 'zappix self-service app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/zappix-visual-ivr'] },
+    { keys: ['snapsolv appconnect', 'snapsolv messaging app', 'snapsolv chat app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/snapsolv'] },
+
+    // =========================================================
+    // APPCONNECT — DIGITAL & MESSAGING CHANNELS
+    // =========================================================
+    { keys: ['textline appconnect', 'textline sms app', 'business texting app', 'sms texting app appconnect'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/textline'] },
+
+    // =========================================================
+    // APPCONNECT — ANALYTICS & REPORTING
+    // =========================================================
+    { keys: ['meilo appconnect', 'meilo emotion ai app', 'emotion analytics app', 'meilo voice analytics'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/meilo'] },
+
+    // =========================================================
+    // APPCONNECT — SECURITY, COMPLIANCE & PAYMENTS
+    // =========================================================
+    { keys: ['validsoft appconnect', 'validsoft voice verity', 'deepfake detection app', 'synthetic voice detection app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/validsoft-voice-verity'] },
+    { keys: ['paytia appconnect', 'paytia secure payments', 'pci payments app', 'phone payment app', 'secure virtual terminal'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/paytia-secure-virtual-terminal'] },
+
+    // =========================================================
+    // APPCONNECT — OUTBOUND / DIALERS
+    // =========================================================
+    { keys: ['autoreach appconnect', 'autoreach power dialer app', 'autoreach dialer', 'autoreach campaign management'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/autoreach', 'https://appconnect.talkdesk.com/apps/autoreach-campaign-management'] },
+    { keys: ['inform branded caller id appconnect', 'inform caller id app', 'branded caller id app', 'first orion app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/inform-branded-caller-id'] },
+    { keys: ['tns branded calling appconnect', 'tns enterprise branded calling', 'branded calling app', 'enterprise caller id app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/tns-enterprise-branded-calling'] },
+
+    // =========================================================
+    // APPCONNECT — HARDWARE
+    // =========================================================
+    { keys: ['jabra appconnect', 'jabra headset app', 'jabra headsets talkdesk', 'headset hardware appconnect'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/jabra'] },
+
+    // =========================================================
+    // APPCONNECT — VIDEO & CO-BROWSE
+    // =========================================================
+    { keys: ['auvious appconnect', 'auvious video app', 'video cobrowse app', 'webrtc video app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/auvious-video'] },
+    { keys: ['egain cobrowse appconnect', 'egain cobrowse app', 'cobrowse app', 'co-browsing app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/egain-cobrowse'] },
+
+    // =========================================================
+    // APPCONNECT — HEALTHCARE
+    // =========================================================
+    { keys: ['epic connector appconnect', 'talkdesk epic connector', 'epic ehr integration', 'epic healthcare app', 'fhir api app', 'mychart app', 'patient access app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/talkdesk-epic-connector'] },
+
+    // =========================================================
+    // APPCONNECT — PROFESSIONAL SERVICES / VOICE RECORDINGS
+    // =========================================================
+    { keys: ['snap recordings appconnect', 'snap recordings app', 'professional voice recording app', 'ivr voice recording service'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/snap-recordings'] },
+    { keys: ['digital base voice appconnect', 'digital base voice overs', 'multilingual ivr recording app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/digital-base-voice-overs'] },
+    { keys: ['trans-eastern voice appconnect', 'trans eastern voice solutions', 'voice prompt recording app', 'multilingual voice recording service'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/trans-eastern-voice-solutions'] },
+
+    // =========================================================
+    // APPCONNECT — IMPLEMENTATION & MIGRATION SERVICES
+    // =========================================================
+    { keys: ['occam appconnect', 'occam experience testing', 'occam ets app', 'ccaas migration testing app', 'cx testing app'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/ets-experience-testing-system'] },
+
+    // =========================================================
+    // DATA DICTIONARY — GENERAL (fallback for broad queries)
+    // =========================================================
+    { keys: ['data dictionary', 'data dictionary overview', 'talkdesk metrics', 'metric definitions', 'explore datasets', 'talkdesk explore data'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/'] },
+
+    // =========================================================
+    // DATA DICTIONARY — DEFAULT REPORTS
+    // =========================================================
+    { keys: ['account breakdown report', 'account breakdown'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/account-breakdown'] },
+    { keys: ['activity report', 'daily activity report', '7 day report', 'weekly activity', 'inbound summary report'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/activity-reports'] },
+    { keys: ['advanced dialer call report', 'dialer calls report', 'outbound dialer report'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/advanced-dialer-calls-report'] },
+    { keys: ['calls report', 'calls log', 'call history report', 'call list report', 'all calls report'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/calls'] },
+    { keys: ['agents report', 'agent performance report', 'agent kpi report', 'agent speed to answer'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/agents'] },
+    { keys: ['numbers analysis', 'did analysis', 'phone number report'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/numbers-analysis'] },
+    { keys: ['feedback report', 'csat report', 'nps report', 'survey report', 'post call survey report', 'customer satisfaction report'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/feedback-report'] },
+    { keys: ['talkdesk phone call report', 'talkdesk phone report', 'td phone calls'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/talkdesk-phone-call-reports'] },
+    { keys: ['usage cost report', 'usage report', 'billing report', 'cost report', 'interaction charges'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/usage-cost-report'] },
+    { keys: ['studio flow execution report', 'flow execution report', 'studio report', 'ivr report', 'flow step report'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/studio-flow-execution-report'] },
+    { keys: ['qm evaluation report', 'quality management report', 'qm default report', 'scorecard report'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/quality-management-report'] },
+
+    // =========================================================
+    // DATA DICTIONARY — EXPLORE API REPORTS
+    // =========================================================
+    { keys: ['user status report api', 'explore api report', 'user status via api', 'status report api'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/user-status-report-via-explore-api'] },
+
+    // =========================================================
+    // DATA DICTIONARY — DEFAULT DASHBOARDS (HISTORICAL)
+    // =========================================================
+    { keys: ['agent contacts volumes dashboard', 'agent volumes dashboard', 'contacts volumes dashboard'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/1-agent-contacts-volumes-and-durations'] },
+    { keys: ['agents dashboard', 'historical agents dashboard', 'agent historical dashboard'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/agents-1'] },
+    { keys: ['agent details dashboard', 'agent drill down dashboard'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/agent-details-dashboard'] },
+
+    // =========================================================
+    // DATA DICTIONARY — CREATE DATASETS (EXPLORE)
+    // =========================================================
+    { keys: ['agent activity analysis', 'agent activity dataset', 'agent activity explore', 'agent status data', 'agent availability data', 'agent csat data', 'agent performance data'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/agent-activity-and-performance'] },
+    { keys: ['calls analysis dataset', 'calls analysis', 'call data', 'aht data', 'call duration data', 'call metrics explore', 'calls explore dataset', 'average handle time data'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/calls-analysis'] },
+    { keys: ['cases dataset', 'cases explore', 'cases data', 'case reporting data', 'ticket data'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/cases'] },
+    { keys: ['contacts dataset', 'contacts explore dataset', 'contacts data', 'contact records data', 'inbound contacts data', 'missed contacts data', 'abandoned contacts data'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/contacts'] },
+    { keys: ['ring attempts dataset', 'ring attempts data', 'ring data', 'agent ring data', 'ring attempts explore'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/ring-attempts-dataset'] },
+    { keys: ['studio flow execution dataset', 'studio flow dataset', 'flow execution data', 'studio analytics data', 'flow analytics data', 'studio data explore'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/studio-flow-execution-dataset'] },
+    { keys: ['digital engagement messaging contacts dataset', 'digital contacts dataset', 'messaging contacts data', 'chat contacts data', 'digital contact reporting'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/digital-engagement-messaging-contacts-dataset'] },
+    { keys: ['digital engagement messaging traffic dataset', 'messaging traffic dataset', 'message traffic data', 'chat message data', 'sms message data', 'whatsapp data', 'digital messaging data'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/digital-engagement-messaging-traffic-dataset'] },
+    { keys: ['outbound dialer campaign records dataset', 'dialer campaign records', 'campaign records data', 'dialer list data', 'record penetration data', 'list penetration'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/outbound-dialer-campaign-records-dataset'] },
+    { keys: ['qm evaluation analysis dataset', 'qm evaluation dataset', 'quality management dataset', 'qa evaluation data', 'scorecard data', 'evaluation data explore'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/qm-evaluation-analysis'] },
+    { keys: ['qm random sampling dataset', 'qm sampling dataset', 'random sampling data', 'qm sampling'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/qm-random-sampling'] },
+    { keys: ['wfm schedules dataset', 'workforce schedules dataset', 'schedule data', 'wfm schedule report', 'agent schedule data'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/reporting-schedules'] },
+    { keys: ['wfm adherence report', 'schedule adherence data', 'adherence dataset', 'wfm custom adherence', 'agent adherence data'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/schedule-adherence-report'] },
+
+    // =========================================================
+    // DATA DICTIONARY — CUSTOM TABLE CALCULATIONS
+    // =========================================================
+    { keys: ['explore functions', 'explore operators', 'table calculations', 'custom calculations explore', 'explore formulas'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/functions-and-operators', 'https://data-dictionary.talkdesk.com/docs/operators'] },
+
+    // =========================================================
+    // DATA DICTIONARY — LIVE METRICS
+    // =========================================================
+    { keys: ['live metrics', 'live dashboard metrics', 'real time metrics', 'live reporting metrics', 'real-time reporting data'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/live-dashboard-metrics'] },
+
+    // =========================================================
+    // DATA DICTIONARY — GLOSSARY OF CALL TYPES
+    // =========================================================
+    { keys: ['abandoned calls definition', 'abandoned call glossary', 'what is abandoned call'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/abandoned-calls'] },
+    { keys: ['inbound calls definition', 'inbound call glossary', 'what is inbound call'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/inbound-calls'] },
+    { keys: ['missed calls definition', 'missed call glossary', 'what is missed call'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/missed-calls'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — GENERAL (fallback for broad queries)
+    // =========================================================
+    { keys: ['developer docs', 'talkdesk api', 'api documentation', 'developer documentation', 'public api', 'api overview', 'talkdesk apis', 'all apis'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/', 'https://docs.talkdesk.com/docs/api-access', 'https://docs.talkdesk.com/reference/api-reference'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — BUILDING WITH TALKDESK (GETTING STARTED)
+    // =========================================================
+    { keys: ['api getting started', 'build with talkdesk', 'developer getting started', 'api quickstart'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/build-started'] },
+    { keys: ['api authentication', 'oauth', 'oauth2', 'access token', 'api token', 'bearer token', 'client credentials', 'signed jwt', 'authorization code'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/authentication'] },
+    { keys: ['api scopes', 'oauth scopes', 'api permissions', 'read write scope'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/scopes'] },
+    { keys: ['paging results', 'pagination api', 'api pagination'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/paging-results'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — CHAT WIDGET
+    // =========================================================
+    { keys: ['chat widget', 'web chat widget', 'chat sdk', 'webchat embed', 'chat widget v1'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/chat-widget-v1'] },
+    { keys: ['chat widget v2', 'chat widget version 2', 'webchat v2'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/chat-widget-v2'] },
+    { keys: ['migrate chat widget', 'chat widget migration', 'v1 to v2 chat'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/migrating-v1-to-v2'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — PARTNER APP / INTEGRATIONS FRAMEWORK
+    // =========================================================
+    { keys: ['partner app', 'partner integration', 'build partner app', 'partner starting point', 'appconnect build'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/partner-app-overview', 'https://docs.talkdesk.com/docs/partner-starting-point'] },
+    { keys: ['apps api', 'partner app installation', 'app lifecycle', 'app installed event'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/api-access'] },
+    { keys: ['events api', 'webhook events', 'app events', 'event subscriptions', 'lifecycle events'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/api-access'] },
+    { keys: ['custom integration', 'connections api', 'talkdesk connections', 'build custom integration'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/integrations', 'https://docs.talkdesk.com/docs/talkdesk-custom-integration', 'https://docs.talkdesk.com/docs/building-a-custom-integration-with-connections'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — WORKSPACE DESIGNER
+    // =========================================================
+    { keys: ['workspace designer', 'workspace cards', 'workspace panels', 'agent workspace customization', 'custom agent desktop', 'workspace api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/workspace-designer-overview', 'https://docs.talkdesk.com/docs/cards', 'https://docs.talkdesk.com/docs/panels'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — CONTACT CENTER APIs
+    // =========================================================
+    { keys: ['contact center api overview', 'contact center apis', 'cc api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/contact-center-overview'] },
+    { keys: ['attributes api', 'agent attributes api', 'proficiency api', 'skill attributes api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/attributes-api'] },
+    { keys: ['callback api', 'queue callback api', 'trigger callback api', 'api callback'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/callback-api'] },
+    { keys: ['flows api', 'trigger studio flow api', 'api triggered flow', 'outbound notification api', 'proactive outreach api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/flows-api'] },
+    { keys: ['prompts api', 'audio prompts api', 'manage prompts api', 'ivr prompts api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/contact-center-overview'] },
+    { keys: ['phone validation api', 'phone identity api', 'number validation api', 'caller fraud api', 'phone fraud detection'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/contact-center-overview'] },
+    { keys: ['recordings api', 'call recording api', 'retrieve recordings api', 'download recordings api', 'recording files api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/recordingsapi'] },
+    { keys: ['ring groups api', 'ring group management api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/contact-center-overview'] },
+    { keys: ['simulated email api', 'web form to email api', 'inbound email api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/contact-center-overview'] },
+    { keys: ['fallback experience api', 'fallback routing api', 'contingency api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/contact-center-overview'] },
+    { keys: ['identity insights api', 'voice biometrics api', 'caller authentication api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/contact-center-overview'] },
+    { keys: ['cfm api', 'customer feedback management api', 'survey api', 'csat api', 'feedback api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/contact-center-overview'] },
+    { keys: ['case api', 'cases api', 'case management api', 'create case api', 'case retrieval api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/case-api'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — DATA PLATFORM APIs
+    // =========================================================
+    { keys: ['data platform api', 'talkdesk data api', 'data apis overview'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/talkdesk-data'] },
+    { keys: ['live api', 'real time api', 'real-time stats api', 'live stats api', 'live queue data api', 'real time queue'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/live-api'] },
+    { keys: ['reporting api', 'historical reporting api', 'explore api', 'download report api', 'reporting jobs api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/talkdesk-data'] },
+    { keys: ['advanced dialer calls report api', 'dialer report api', 'outbound dialer report api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/advanced-dialer-calls-report-api'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — ADVANCED DIALER (OUTBOUND) APIs
+    // =========================================================
+    { keys: ['advanced dialer api', 'predictive dialer api', 'progressive dialer api', 'power dialer api', 'outbound dialer api', 'outbound campaign api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/agent-api', 'https://docs.talkdesk.com/docs/campaign-api', 'https://docs.talkdesk.com/docs/customer-api'] },
+    { keys: ['dialer agent api', 'outbound agent api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/agent-api'] },
+    { keys: ['campaign api', 'dialer campaign api', 'manage campaigns api', 'create campaign api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/campaign-api'] },
+    { keys: ['customer api dialer', 'dialer customer api', 'contact records api dialer', 'dnc api', 'do not call api', 'record lists api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/customer-api'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — MANAGEMENT APIs
+    // =========================================================
+    { keys: ['users api', 'user management api', 'agent management api', 'list users api', 'get user api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/usersapi'] },
+    { keys: ['scim api', 'scim', 'user provisioning api', 'auto provisioning', 'directory sync api', 'scim provisioning'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/scim-api'] },
+    { keys: ['accounts api', 'account info api', 'talkdesk account api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/admin-overview'] },
+    { keys: ['bulk import api', 'bulk agent import', 'csv agent import api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/admin-overview'] },
+    { keys: ['contacts api', 'contacts management api', 'contact records api', 'get contacts api', 'update contacts api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/contacts-and-more-talkdesk-documentation'] },
+    { keys: ['billing insights api', 'billing api', 'invoices api', 'subscriptions api', 'usage month api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/billing-insights-api'] },
+    { keys: ['express api', 'talkdesk express api', 'reseller api', 'partner reseller api', 'trial provisioning api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/express-api'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — WFM APIs
+    // =========================================================
+    { keys: ['wfm api', 'workforce management api', 'wfm integration api', 'time off api', 'time off sync api', 'hr system integration wfm'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/overview', 'https://docs.talkdesk.com/docs/scheduled-time-off-api', 'https://docs.talkdesk.com/docs/time-off-sync-with-hr-systems'] },
+    { keys: ['scheduled time off api', 'time off request api', 'agent time off api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/scheduled-time-off-api'] },
+
+    // =========================================================
+    // DOCS.TALKDESK.COM — GUARDIAN APIs
+    // =========================================================
+    { keys: ['guardian api', 'talkdesk guardian', 'security monitoring api', 'agent behavior api', 'fraud detection api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/guardian-api'] },
+    { keys: ['guardian cases api', 'guardian anomaly api', 'behavior deviation api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/guardian-cases-api'] },
+    { keys: ['guardian sessions api', 'agent session api', 'login logout api', 'agent session data api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/guardian-sessions-api'] },
+    { keys: ['guardian users api', 'guardian agent info api', 'agent status guardian api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/guardian-users-api'] },
+    { keys: ['guardian call quality api', 'call quality api', 'agent call quality api', 'voip quality api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/guardian-call-quality-api'] },
+
+    // =========================================================
+    // SUPPORT.TALKDESK.COM — GENERAL PRODUCT TOPICS
+    // =========================================================
+    { keys: ['support portal', 'support talkdesk', 'knowledge base'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us'] },
+    { keys: ['call recording', 'recording', 'compliance recording', 'call capture'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/204364353-Call-Recording'] },
+    { keys: ['reporting', 'reports', 'analytics', 'talkdesk reporting', 'live reporting', 'historical reporting', 'dashboards'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/200056589-Reporting'] },
+    { keys: ['live reporting', 'real time reporting', 'live dashboard', 'real-time dashboard'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/200936763-Live-Reporting'] },
+    { keys: ['historical reporting', 'custom reports', 'talkdesk explore', 'explore reports'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360008426992-Talkdesk-Explore'] },
+    { keys: ['workforce management', 'wfm', 'scheduling', 'forecasting', 'workforce optimization', 'wfo', 'agent scheduling', 'shift planning', 'intraday management'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/360001444631-Workforce-Management'] },
+    { keys: ['quality management', 'qm', 'quality assurance', 'call scoring', 'qa scorecard', 'call evaluation', 'agent evaluation', 'interaction review', 'scorecard', 'qa form'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/360001444611-Quality-Management'] },
+    { keys: ['speech analytics', 'ai analytics', 'interaction analytics', 'conversation analytics', 'topic detection', 'sentiment analysis', 'emotion detection', 'call transcription analytics'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/360001444591-Speech-Analytics'] },
+    { keys: ['autopilot', 'virtual agent', 'chatbot', 'conversational ai', 'self service', 'ai self-service', 'voice bot', 'digital bot', 'ivr self service', 'bot deflection', 'call deflection'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/360001444551-Autopilot'] },
+    { keys: ['agent assist', 'ai agent assist', 'real-time assist', 'agent copilot', 'copilot', 'real time agent guidance', 'next best action', 'live call guidance', 'agent suggestions'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/360001444571-Agent-Assist'] },
+    { keys: ['knowledge base talkdesk', 'knowledge management', 'kb talkdesk', 'knowledge articles', 'knowledge base articles', 'self service knowledge'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/4413260882331-Knowledge-Management'] },
+    { keys: ['omnichannel', 'digital channels', 'chat channel', 'email channel', 'sms channel', 'whatsapp', 'social messaging', 'facebook messenger', 'instagram messaging'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/360001444531-Digital-Engagement'] },
+    { keys: ['sms', 'text messaging', 'sms channel'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360006839112-SMS'] },
+    { keys: ['whatsapp', 'whatsapp business', 'whatsapp channel'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/4413256741915-WhatsApp'] },
+    { keys: ['email channel', 'email routing', 'email talkdesk'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360007267292-Email'] },
+    { keys: ['video', 'video calls', 'video conferencing talkdesk'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/360007267272-Video'] },
+    { keys: ['account setup', 'talkdesk setup', 'initial setup', 'getting started talkdesk', 'account configuration'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/200056569-Account'] },
+    { keys: ['numbers', 'phone numbers', 'did numbers', 'number porting', 'toll free'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/200936803-Phone-Numbers'] },
+    { keys: ['voip', 'voice quality', 'call quality', 'network requirements', 'bandwidth'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/200056599-Calls'] },
+    { keys: ['contacts', 'contact management', 'import contacts', 'contact list'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/200936823-Contacts'] },
+    { keys: ['agents', 'agent setup', 'agent configuration', 'agent management'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/200936743-Agents'] },
+    { keys: ['queues', 'call queues', 'queue management', 'ring groups'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/200936783-Queues'] },
+    { keys: ['roles permissions', 'user roles', 'admin roles', 'rbac'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/articles/360043804411-Understanding-Roles-in-Talkdesk'] },
+    { keys: ['security', 'hipaa', 'gdpr', 'compliance', 'pci', 'sox', 'data privacy', 'data security'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/200056609-Security-Trust'] },
+    { keys: ['api keys', 'api credentials', 'oauth client', 'client id secret'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/articles/360044280071'] },
+    { keys: ['cnam', 'caller id', 'caller name', 'cli', 'calling line identity'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/articles/206189917-CNAM-Configuration'] },
+    { keys: ['mobile app', 'talkdesk mobile', 'ios app', 'android app'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/200936733-Mobile-App'] },
+    { keys: ['call dispositions', 'call outcomes', 'wrap up codes', 'disposition codes', 'after call work', 'acw'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/articles/207560553-Call-Dispositions'] },
+    { keys: ['inbound calls', 'inbound routing', 'inbound call handling'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/200056609'] },
+    { keys: ['outbound calls', 'outbound dialing', 'outbound campaign'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/200936753-Outbound-Calls'] },
+    { keys: ['warm transfer', 'blind transfer', 'call transfer', 'transfer calls'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/articles/206189947-Transferring-Calls'] },
+    { keys: ['conference call', 'three way call', '3 way call'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/articles/206189957-Conference-Calls'] },
+    { keys: ['ring time', 'timeout', 'queue timeout', 'max queue time'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/sections/200936783-Queues'] },
+    { keys: ['screen recording', 'screen capture'], category: 'support',
+      urls: ['https://support.talkdesk.com/hc/en-us/categories/360001444611-Quality-Management'] },
+
+    // =========================================================
+    // CROSS-LINKS: PRODUCT TOPICS → NATIVE + APPCONNECT TOGETHER
+    // Each entry spans multiple categories so a single keyword
+    // surfaces the native Talkdesk docs AND the relevant
+    // AppConnect partners in one result set.
+    // =========================================================
+
+    // WFM — native + Calabrio + Verint + Assembled + TTEC + Authority
+    { keys: ['workforce management', 'wfm', 'scheduling', 'forecasting', 'workforce optimization', 'wfo', 'agent scheduling', 'shift planning', 'intraday management', 'rta', 'real time adherence', 'adherence', 'shrinkage', 'occupancy', 'staffing'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/calabrio-wfm',
+        'https://appconnect.talkdesk.com/apps/calabrio-teleopti-workforce-management',
+        'https://appconnect.talkdesk.com/apps/verint-workforce-management',
+        'https://appconnect.talkdesk.com/apps/verint-workforce-management-professional',
+        'https://appconnect.talkdesk.com/apps/assembled',
+        'https://appconnect.talkdesk.com/apps/wfm-adapter-by-ttec-digital',
+        'https://appconnect.talkdesk.com/apps/authority-center'
+      ]
+    },
+    { keys: ['workforce management', 'wfm', 'scheduling', 'forecasting', 'workforce optimization', 'wfo', 'agent scheduling', 'shift planning', 'intraday management', 'rta', 'real time adherence', 'adherence', 'shrinkage', 'occupancy', 'staffing'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/overview', 'https://docs.talkdesk.com/docs/scheduled-time-off-api', 'https://docs.talkdesk.com/docs/time-off-sync-with-hr-systems']
+    },
+    { keys: ['workforce management', 'wfm', 'scheduling', 'forecasting', 'wfo', 'agent scheduling', 'shift planning', 'intraday management', 'rta', 'adherence'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/reporting-schedules', 'https://data-dictionary.talkdesk.com/docs/schedule-adherence-report']
+    },
+
+    // QM — native + Calabrio + Verint + Scorebuddy + Observe.AI + C2Perform + Authority
+    { keys: ['quality management', 'qm', 'quality assurance', 'call scoring', 'qa scorecard', 'call evaluation', 'agent evaluation', 'interaction review', 'scorecard', 'qa form', 'interaction quality', 'call monitoring', 'call calibration'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/calabrio-quality-management',
+        'https://appconnect.talkdesk.com/apps/scorebuddy-all-in-one-staff-quality-assessment',
+        'https://appconnect.talkdesk.com/apps/observe-ai-agent-assist',
+        'https://appconnect.talkdesk.com/apps/c2perform-knowledgebase',
+        'https://appconnect.talkdesk.com/apps/authority-center'
+      ]
+    },
+    { keys: ['quality management', 'qm', 'quality assurance', 'call scoring', 'qa scorecard', 'call evaluation', 'agent evaluation', 'interaction review', 'scorecard', 'qa form', 'interaction quality'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/qm-evaluation-analysis', 'https://data-dictionary.talkdesk.com/docs/qm-random-sampling']
+    },
+
+    // SPEECH ANALYTICS — native + Calabrio + Tethr + Observe.AI + meilo
+    { keys: ['speech analytics', 'ai analytics', 'interaction analytics', 'conversation analytics', 'topic detection', 'sentiment analysis', 'emotion detection', 'call transcription analytics', 'voice of customer', 'voc analytics', 'call analytics ai'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/calabrio-analytics',
+        'https://appconnect.talkdesk.com/apps/tethr',
+        'https://appconnect.talkdesk.com/apps/observe-ai-agent-assist',
+        'https://appconnect.talkdesk.com/apps/meilo'
+      ]
+    },
+
+    // AGENT ASSIST / COPILOT — native + Observe.AI + Teneo + C2Perform
+    { keys: ['agent assist', 'ai agent assist', 'real-time assist', 'agent copilot', 'copilot', 'real time agent guidance', 'next best action', 'live call guidance', 'agent suggestions', 'real time coaching'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/observe-ai-agent-assist',
+        'https://appconnect.talkdesk.com/apps/artificial-solutions-teneo',
+        'https://appconnect.talkdesk.com/apps/c2perform-knowledgebase'
+      ]
+    },
+
+    // VIRTUAL AGENT / SELF-SERVICE — native + Omilia + Replicant + SmartAction + Pypestream + Zappix + Atomchat
+    { keys: ['autopilot', 'virtual agent', 'chatbot', 'conversational ai', 'self service', 'ai self-service', 'voice bot', 'ivr self service', 'bot deflection', 'call deflection', 'natural language', 'nlu', 'nlp ivr', 'voicebot', 'automated resolution'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/omilia-conversational-voice',
+        'https://appconnect.talkdesk.com/apps/replicant-voice',
+        'https://appconnect.talkdesk.com/apps/ai-powered-virtual-agents-for-voice',
+        'https://appconnect.talkdesk.com/apps/pypestream',
+        'https://appconnect.talkdesk.com/apps/artificial-solutions-teneo',
+        'https://appconnect.talkdesk.com/apps/zappix-visual-ivr',
+        'https://appconnect.talkdesk.com/apps/atomchat'
+      ]
+    },
+
+    // OUTBOUND DIALER — native + AutoReach + INFORM + TNS
+    { keys: ['outbound dialer', 'predictive dialer', 'progressive dialer', 'power dialer', 'preview dialer', 'outbound campaign', 'dialer campaign', 'list management', 'connect rate', 'call blending', 'proactive outreach', 'branded call', 'answer rate', 'answer rates'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/autoreach',
+        'https://appconnect.talkdesk.com/apps/autoreach-campaign-management',
+        'https://appconnect.talkdesk.com/apps/inform-branded-caller-id',
+        'https://appconnect.talkdesk.com/apps/tns-enterprise-branded-calling'
+      ]
+    },
+    { keys: ['outbound dialer', 'predictive dialer', 'progressive dialer', 'power dialer', 'outbound campaign', 'dialer campaign', 'list management', 'proactive outreach'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/agent-api', 'https://docs.talkdesk.com/docs/campaign-api', 'https://docs.talkdesk.com/docs/customer-api', 'https://docs.talkdesk.com/docs/advanced-dialer-calls-report-api']
+    },
+    { keys: ['outbound dialer', 'dialer campaign', 'list management', 'record penetration', 'list penetration'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/docs/outbound-dialer-campaign-records-dataset', 'https://data-dictionary.talkdesk.com/docs/advanced-dialer-calls-report']
+    },
+
+    // SALESFORCE — support portal + appconnect + studio data dip + docs
+    { keys: ['salesforce', 'sfdc', 'sfsc', 'salesforce service cloud', 'salesforce crm', 't4s', 'talkdesk for salesforce', 'salesforce integration', 'salesforce connector'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/salesforce']
+    },
+    { keys: ['salesforce', 'sfdc', 'sfsc', 'salesforce service cloud', 'salesforce crm', 't4s', 'talkdesk for salesforce', 'salesforce integration', 'salesforce connector', 'salesforce screen pop', 'salesforce data dip'], category: 'studio',
+      urls: ['https://studio.talkdesk.com/docs/salesforce-data-dip', 'https://studio.talkdesk.com/docs/trigger-salesforce-omni-channel-flow', 'https://studio.talkdesk.com/docs/trigger-salesforce-unified-routing']
+    },
+
+    // ZENDESK — support portal + appconnect
+    { keys: ['zendesk', 'zendesk crm', 'zendesk integration', 'talkdesk for zendesk', 'zendesk screen pop', 'zendesk connector'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/zendesk']
+    },
+
+    // SERVICENOW — support portal + appconnect
+    { keys: ['servicenow', 'service now', 'snow', 'talkdesk for servicenow', 'servicenow screen pop', 'servicenow itsm', 'servicenow connector'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/servicenow']
+    },
+
+    // HUBSPOT — support portal + appconnect
+    { keys: ['hubspot', 'hub spot', 'talkdesk for hubspot', 'hubspot crm', 'hubspot connector', 'hubspot screen pop'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/hubspot']
+    },
+
+    // MICROSOFT — Teams + Dynamics appconnect cross-link
+    { keys: ['microsoft teams', 'ms teams', 'teams integration', 'talkdesk for teams'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/microsoft-teams']
+    },
+    { keys: ['dynamics 365', 'd365', 'microsoft dynamics', 'dynamics crm', 'ms dynamics'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/microsoft-dynamics-365']
+    },
+
+    // CALL RECORDING — native + Verint + Calabrio unified recording + Authority
+    { keys: ['call recording', 'recording', 'compliance recording', 'call capture', 'interaction recording', 'unified recording', 'screen recording', 'dual channel recording', 'recording compliance', 'gdpr recording'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/verint-cm-pro-connector',
+        'https://appconnect.talkdesk.com/apps/calabrio-quality-management',
+        'https://appconnect.talkdesk.com/apps/authority-center'
+      ]
+    },
+    { keys: ['call recording', 'recording', 'compliance recording', 'call capture', 'interaction recording', 'unified recording', 'retrieve recordings', 'recording api'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/recordingsapi']
+    },
+
+    // PCI / PAYMENTS / SECURITY — native + Paytia + Authority + ValidSoft
+    { keys: ['pci', 'pci compliance', 'pci dss', 'payment over phone', 'take payment phone', 'card payment agent', 'secure payment', 'card data', 'payment compliance'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/paytia-secure-virtual-terminal',
+        'https://appconnect.talkdesk.com/apps/authority-center'
+      ]
+    },
+    { keys: ['deepfake', 'synthetic voice', 'voice fraud', 'ai voice fraud', 'voice spoofing', 'fraud detection voice', 'voice verification'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/validsoft-voice-verity']
+    },
+
+    // COBROWSE / VIDEO — native + Auvious + eGain
+    { keys: ['cobrowse', 'co-browse', 'cobrowsing', 'screen share agent', 'visual engagement', 'video call agent', 'video support', 'webrtc video'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/auvious-video',
+        'https://appconnect.talkdesk.com/apps/egain-cobrowse'
+      ]
+    },
+
+    // GAMIFICATION / AGENT PERFORMANCE — Motivarnos + Tap My Back + Compas
+    { keys: ['gamification', 'agent gamification', 'agent engagement', 'employee recognition', 'agent motivation', 'performance management agents', 'agent coaching', 'agent performance coaching', 'leaderboard'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/motivarnos',
+        'https://appconnect.talkdesk.com/apps/tap-my-back',
+        'https://appconnect.talkdesk.com/apps/compas'
+      ]
+    },
+
+    // HEALTHCARE — Epic connector
+    { keys: ['healthcare', 'health system', 'patient experience', 'patient routing', 'epic', 'ehr', 'electronic health record', 'fhir', 'mychart', 'patient access', 'care team routing', 'hipaa routing', 'clinic routing', 'hospital contact center'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/talkdesk-epic-connector']
+    },
+
+    // IVR PROMPTS / VOICE RECORDINGS — Snap Recordings + Digital Base + Trans-Eastern
+    { keys: ['ivr recording', 'ivr prompts', 'professional recording', 'voice over', 'on hold message', 'hold music', 'on-hold recording', 'greeting recording', 'multilingual ivr', 'custom ivr voice'], category: 'appconnect',
+      urls: [
+        'https://appconnect.talkdesk.com/apps/snap-recordings',
+        'https://appconnect.talkdesk.com/apps/digital-base-voice-overs',
+        'https://appconnect.talkdesk.com/apps/trans-eastern-voice-solutions'
+      ]
+    },
+
+    // MIGRATION / IMPLEMENTATION — Occam ETS
+    { keys: ['migration', 'ccaas migration', 'contact center migration', 'cloud migration', 'cutover', 'uat testing', 'user acceptance testing', 'cx testing', 'platform migration', 'legacy migration', 'system testing contact center'], category: 'appconnect',
+      urls: ['https://appconnect.talkdesk.com/apps/ets-experience-testing-system']
+    },
+
+    // SCIM / SSO / USER PROVISIONING — support + docs API
+    { keys: ['scim', 'sso', 'single sign on', 'saml', 'okta', 'azure ad', 'user provisioning', 'auto provisioning', 'identity provider', 'idp'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/scim-api']
+    },
+
+    // REPORTING (BROAD) — data dictionary + support + docs
+    { keys: ['reporting', 'reports', 'analytics', 'talkdesk reporting', 'dashboards', 'custom reporting', 'explore', 'talkdesk explore'], category: 'data-dictionary',
+      urls: ['https://data-dictionary.talkdesk.com/', 'https://data-dictionary.talkdesk.com/docs/live-dashboard-metrics']
+    },
+    { keys: ['reporting', 'reports', 'analytics', 'talkdesk reporting', 'dashboards', 'custom reporting', 'explore', 'talkdesk explore', 'historical reporting', 'live reporting'], category: 'docs-api',
+      urls: ['https://docs.talkdesk.com/docs/live-api', 'https://docs.talkdesk.com/docs/talkdesk-data']
+    },
+
+];
+
+// ============================================================
+// PROCESSING
+// ============================================================
+const categoryLabels = {
+    'studio':          '📐 Studio Components & Flows',
+    'integrations':    '🔗 Integrations (Support Portal)',
+    'appconnect':      '🏪 AppConnect Marketplace',
+    'data-dictionary': '📊 Data Dictionary',
+    'docs-api':        '🛠 Developer Docs & APIs',
+    'support':         '📚 Support Knowledge Base'
+};
+const categoryOrder = ['studio', 'integrations', 'appconnect', 'data-dictionary', 'docs-api', 'support'];
+
+// Store last results so copy functions can access them
+let lastResults = {};
+
+function processQuery() {
+    const input = document.getElementById('userInput').value.toLowerCase();
+    if (!input.trim()) {
+        showPlaceholder('Please enter a question or requirements above.');
+        return;
+    }
+
+    const matchedByCategory = {};
+    docMap.forEach(item => {
+        if (activeFilter !== 'all' && item.category !== activeFilter) return;
+        if (item.keys.some(k => input.includes(k))) {
+            if (!matchedByCategory[item.category]) matchedByCategory[item.category] = new Set();
+            item.urls.forEach(u => matchedByCategory[item.category].add(u));
+        }
+    });
+
+    let totalLinks = 0;
+    categoryOrder.forEach(c => { if (matchedByCategory[c]) totalLinks += matchedByCategory[c].size; });
+
+    if (totalLinks === 0) {
+        lastResults = {};
+        showPlaceholder('No specific documentation found.\n\nGeneral resources:\n• https://support.talkdesk.com/hc/en-us\n• https://docs.talkdesk.com/\n• https://studio.talkdesk.com/docs/talkdesk-studio-intro\n• https://appconnect.talkdesk.com/\n• https://data-dictionary.talkdesk.com/');
+        document.getElementById('matchCount').style.display = 'none';
+        return;
+    }
+
+    lastResults = matchedByCategory;
+    renderSections(matchedByCategory);
+
+    const countEl = document.getElementById('matchCount');
+    countEl.style.display = 'block';
+    countEl.textContent = `✓ ${totalLinks} relevant link${totalLinks !== 1 ? 's' : ''} found across ${Object.keys(matchedByCategory).length} section${Object.keys(matchedByCategory).length !== 1 ? 's' : ''}`;
+}
+
+function renderSections(matchedByCategory) {
+    const sectionsEl = document.getElementById('outputSections');
+    const placeholder = document.getElementById('outputPlaceholder');
+    const actionsBar = document.getElementById('outputActions');
+
+    placeholder.style.display = 'none';
+    actionsBar.style.display = 'flex';
+    sectionsEl.innerHTML = '';
+
+    categoryOrder.forEach(cat => {
+        if (!matchedByCategory[cat]) return;
+        const urls = Array.from(matchedByCategory[cat]);
+        const label = categoryLabels[cat];
+
+        const section = document.createElement('div');
+        section.className = 'result-section';
+        section.dataset.cat = cat;
+
+        const header = document.createElement('div');
+        header.className = 'result-section-header';
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'result-section-label';
+        labelEl.textContent = label;
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'section-copy-btn';
+        copyBtn.textContent = 'Copy Section';
+        copyBtn.onclick = () => copySectionByEl(copyBtn, label, urls);
+
+        header.appendChild(labelEl);
+        header.appendChild(copyBtn);
+
+        const urlsEl = document.createElement('div');
+        urlsEl.className = 'result-section-urls';
+        urlsEl.textContent = urls.map(u => '• ' + u).join('\n');
+
+        section.appendChild(header);
+        section.appendChild(urlsEl);
+        sectionsEl.appendChild(section);
+    });
+
+    // Reset copy-all button
+    const copyAllBtn = document.getElementById('copyAllBtn');
+    copyAllBtn.textContent = '⎘ Copy All';
+    copyAllBtn.classList.remove('copied');
+}
+
+function showPlaceholder(msg) {
+    document.getElementById('outputSections').innerHTML = '';
+    document.getElementById('outputActions').style.display = 'none';
+    const ph = document.getElementById('outputPlaceholder');
+    ph.style.display = 'block';
+    ph.style.textAlign = 'left';
+    ph.style.whiteSpace = 'pre-wrap';
+    ph.style.fontFamily = "'Courier New', monospace";
+    ph.style.fontSize = '12px';
+    ph.style.color = '#888';
+    ph.style.padding = '16px 4px';
+    ph.textContent = msg;
+}
+
+// ============================================================
+// COPY FUNCTIONS
+// ============================================================
+function copySectionByEl(btn, label, urls) {
+    const text = `— ${label} —\n` + urls.map(u => '• ' + u).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'Copy Section';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+function copyAll() {
+    if (!Object.keys(lastResults).length) return;
+    let text = 'For more information please review our documentation:\n\n';
+    categoryOrder.forEach(cat => {
+        if (!lastResults[cat]) return;
+        text += `— ${categoryLabels[cat]} —\n`;
+        text += Array.from(lastResults[cat]).map(u => '• ' + u).join('\n');
+        text += '\n\n';
+    });
+    navigator.clipboard.writeText(text.trim()).then(() => {
+        const btn = document.getElementById('copyAllBtn');
+        btn.textContent = '✓ All Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = '⎘ Copy All';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+function clearAll() {
+    document.getElementById('userInput').value = '';
+    lastResults = {};
+    document.getElementById('outputSections').innerHTML = '';
+    document.getElementById('outputActions').style.display = 'none';
+    document.getElementById('matchCount').style.display = 'none';
+    const ph = document.getElementById('outputPlaceholder');
+    ph.style.display = 'block';
+    ph.style.textAlign = 'center';
+    ph.style.whiteSpace = 'normal';
+    ph.style.fontFamily = 'inherit';
+    ph.style.fontSize = '13px';
+    ph.style.color = '#bbb';
+    ph.style.padding = '40px 10px';
+    ph.textContent = 'Documentation links will generate based on your input above...';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('userInput').addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'Enter') { processQuery(); }
+    });
+});
+</script>
+</body>
+</html>
