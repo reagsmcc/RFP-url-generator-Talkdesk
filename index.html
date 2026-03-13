@@ -1,0 +1,2853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talkdesk Ultimate SE Docs Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --td-purple: #4a154b;
+            --td-purple-dark: #2d0a31;
+            --td-purple-mid: #6b2d6d;
+            --td-accent: #c95dc8;
+            --td-bg: #f8f5f9;
+            --td-border: #e8e0e9;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--td-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            width: 100%;
+            background: linear-gradient(135deg, var(--td-purple-dark) 0%, var(--td-purple) 60%, var(--td-purple-mid) 100%);
+            color: white;
+            padding: 36px 0 50px;
+            text-align: center;
+        }
+        header h1 { margin: 0 0 8px; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+        header p { margin: 0; opacity: 0.75; font-size: 13px; }
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 11px;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+        .container {
+            width: 98%;
+            max-width: 1700px;
+            margin: -28px auto 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(74, 21, 75, 0.08);
+            border: 1px solid var(--td-border);
+        }
+        h2 {
+            color: var(--td-purple);
+            font-size: 11px;
+            margin: 0 0 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--td-bg);
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h2 .step-badge {
+            background: var(--td-purple);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+        textarea {
+            width: 100%;
+            height: 520px;
+            padding: 14px;
+            border: 1.5px solid var(--td-border);
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            color: #333;
+            transition: border-color 0.2s;
+        }
+        textarea:focus { outline: none; border-color: var(--td-accent); }
+        textarea::placeholder { color: #aaa; }
+        .btn-group { display: grid; grid-template-columns: 3fr 1fr; gap: 10px; }
+        .btn {
+            background: linear-gradient(135deg, var(--td-purple) 0%, var(--td-purple-mid) 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+            letter-spacing: 0.2px;
+        }
+        .btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(74,21,75,0.3); }
+        .btn-clear {
+            background: var(--td-bg);
+            color: #666;
+            border: 1.5px solid var(--td-border);
+        }
+        .btn-clear:hover { background: #ede8ee; box-shadow: none; }
+        .output-box {
+            background: #fdfcfd;
+            border: 1.5px solid var(--td-border);
+            border-radius: 10px;
+            padding: 18px 18px 10px;
+            min-height: 600px;
+            color: #1d1d1f;
+            font-size: 13px;
+        }
+        /* Top action bar */
+        .output-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .copy-all-btn {
+            background: var(--td-purple);
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 7px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .copy-all-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+        .copy-all-btn.copied { background: #2d8a4e; }
+        /* Per-section blocks */
+        .result-section {
+            background: white;
+            border: 1.5px solid var(--td-border);
+            border-radius: 9px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .result-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px 9px 14px;
+            background: #f7f2f8;
+            border-bottom: 1.5px solid var(--td-border);
+            gap: 8px;
+        }
+        .result-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--td-purple);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section-copy-btn {
+            background: white;
+            border: 1px solid var(--td-border);
+            padding: 3px 11px;
+            border-radius: 5px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--td-purple);
+            transition: all 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .section-copy-btn:hover { background: var(--td-purple); color: white; border-color: var(--td-purple); }
+        .section-copy-btn.copied { background: #2d8a4e; color: white; border-color: #2d8a4e; }
+        .result-section-urls {
+            padding: 10px 14px 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11.5px;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            color: #333;
+        }
+        .result-section-urls a {
+            color: #5a0e6e;
+            text-decoration: none;
+        }
+        .result-section-urls a:hover { text-decoration: underline; }
+        /* Placeholder / empty state */
+        #outputPlaceholder {
+            color: #bbb;
+            font-size: 13px;
+            padding: 40px 10px;
+            text-align: center;
+            font-family: inherit;
+        }
+        .match-count {
+            font-family: inherit;
+            font-size: 11px;
+            color: var(--td-purple);
+            background: #f0e8f0;
+            border-radius: 20px;
+            padding: 2px 10px;
+            margin-bottom: 14px;
+            display: none;
+            width: fit-content;
+        }
+        .section-label {
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            margin: 14px 0 4px;
+        }
+        /* Category filter chips */
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 16px;
+        }
+        .chip {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--td-border);
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+        .chip:hover, .chip.active {
+            background: var(--td-purple);
+            color: white;
+            border-color: var(--td-purple);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Talkdesk SE Docs Engine</h1>
+    <p>The Comprehensive Solutions Engineering Documentation Repository</p>
+    <div class="version-badge">V42 — AppConnect + Standalone Fixes</div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2><span class="step-badge">1</span>Paste Requirements or RFP Question</h2>
+        <div class="filter-row" id="filterRow">
+            <button class="chip active" onclick="toggleFilter(this, 'all')">All</button>
+            <button class="chip" onclick="toggleFilter(this, 'studio')">Studio</button>
+            <button class="chip" onclick="toggleFilter(this, 'integrations')">Integrations</button>
+            <button class="chip" onclick="toggleFilter(this, 'appconnect')">AppConnect</button>
+            <button class="chip" onclick="toggleFilter(this, 'data-dictionary')">Data Dictionary</button>
+            <button class="chip" onclick="toggleFilter(this, 'docs-api')">Docs / APIs</button>
+            <button class="chip" onclick="toggleFilter(this, 'support')">Support</button>
+        </div>
+        <textarea id="userInput" placeholder="Paste RFP, question, or technical requirements here...
+
+Examples:
+- 'Does Talkdesk integrate with Salesforce and ServiceNow?'
+- 'How does callback from queue work in Studio?'
+- 'What APIs are available for user management and reporting?'
+- 'Do you have workforce management and WFM APIs?'"></textarea>
+        <div class="btn-group">
+            <button class="btn" onclick="processQuery()">⚡ Generate Documentation Links</button>
+            <button class="btn btn-clear" onclick="clearAll()">Clear</button>
+        </div>
+    </div>
+    <div class="card">
+        <h2><span class="step-badge">2</span>Relevant Documentation Links</h2>
+        <div class="match-count" id="matchCount"></div>
+        <div class="output-box" id="outputBox">
+            <div class="output-actions" id="outputActions" style="display:none;">
+                <span style="font-size:11px;color:#999;font-family:inherit;">Click any section's button to copy just that group</span>
+                <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">⎘ Copy All</button>
+            </div>
+            <div id="outputSections"></div>
+            <div id="outputPlaceholder">Documentation links will generate based on your input above...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// ACTIVE FILTER
+// ============================================================
+let activeFilter = 'all';
+function toggleFilter(el, category) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    activeFilter = category;
+}
+
+// ============================================================
+// MASTER DOC MAP
+// Each entry: { keys: [...], urls: [...], category: '...' }
+// categories: studio | integrations | appconnect | data-dictionary | docs-api | support
+// ============================================================
+// ============================================================
+// docMap — V25: 940 real Talkdesk Support URLs across 111 sections
+// Auto-generated from Talkdesk Help Center API (March 2026)
+// ============================================================
+// ============================================================
+// docMap — V26: Two-tier system
+// Generic keywords → overview URLs only
+// Specific keywords → targeted article URLs
+// ============================================================
+const docMap = [
+  // Using Copilot in Talkdesk Zendesk Connector — GENERIC (overview only)
+  { keys: ["zendesk", "zendesk connector", "zendesk integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/30627925260315-Using-Copilot-in-Talkdesk-Zendesk-Connector"],
+    category: 'integrations', group: 'using_copilot_in_talkdesk_zendesk_connec', tier: 'g' },
+
+  // Using Copilot in Talkdesk Zendesk Connector — SPECIFIC: Click-to-Call
+  { keys: ["zendesk click to call", "zendesk contact pop"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360059122771-Using-Zendesk-Click-to-Call-and-Contact-Pop"],
+    category: 'integrations', group: 'using_copilot_in_talkdesk_zendesk_connec', tier: 's' },
+
+  // Using Copilot in Talkdesk Zendesk Connector — SPECIFIC: Automating
+  { keys: ["zendesk automate", "zendesk automation"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200369759-Automating-Tasks-in-your-Zendesk-Integration"],
+    category: 'integrations', group: 'using_copilot_in_talkdesk_zendesk_connec', tier: 's' },
+
+  // Using Copilot in Talkdesk Zendesk Connector — SPECIFIC: Relate To
+  { keys: ["zendesk relate to"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4412965808155-Using-Relate-To-in-Talkdesk-Zendesk-Connector-Conversations", "https://support.talkdesk.com/hc/en-us/articles/360045497992-Enabling-Relate-to-Ticket-in-Talkdesk-Zendesk-Connector"],
+    category: 'integrations', group: 'using_copilot_in_talkdesk_zendesk_connec', tier: 's' },
+
+  // Auto-Answer — GENERIC (overview only)
+  { keys: ["call handling", "auto answer", "call preferences"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360032619852-Auto-Answer"],
+    category: 'support', group: 'auto_answer', tier: 'g' },
+
+  // Configuring the Limit for Voicemail Length (Legacy) — GENERIC (overview only)
+  { keys: ["voicemail", "voicemail settings", "voicemail setup"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/207197256-Configuring-the-Limit-for-Voicemail-Length-Legacy"],
+    category: 'support', group: 'configuring_the_limit_for_voicemail_leng', tier: 'g' },
+
+  // Talkdesk Users — GENERIC (overview only)
+  { keys: ["users", "agents", "teams", "user management", "agent management", " user ", " contact "],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360000193143-Teams-Section-Overview"],
+    category: 'support', group: 'talkdesk_users', tier: 'g' },
+
+  // Talkdesk Users — SPECIFIC: Ring Groups
+  { keys: ["ring groups setup", "ring group configuration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200617459-Setting-up-Ring-Groups-Queues"],
+    category: 'support', group: 'talkdesk_users', tier: 's' },
+
+  // Talkdesk Users — SPECIFIC: Roles
+  { keys: ["roles permissions", "rbac", "user roles"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/11114473839643-Roles-and-Permissions"],
+    category: 'support', group: 'talkdesk_users', tier: 's' },
+
+  // Talkdesk Users — SPECIFIC: SCIM
+  { keys: ["scim provisioning", "user provisioning"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4425488666395-SCIM-User-Management-for-OKTA", "https://support.talkdesk.com/hc/en-us/articles/360052727652-SCIM-User-Management-with-Microsoft-Entra-ID", "https://support.talkdesk.com/hc/en-us/articles/360044358831-SCIM-User-Provisioning-with-OneLogin"],
+    category: 'support', group: 'talkdesk_users', tier: 's' },
+
+  // Is it possible to change the amount of time the call rings each agent? — GENERIC (overview only)
+  { keys: ["admin faq", "configuration faq"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360000191103-Is-it-possible-to-change-the-amount-of-time-the-call-rings-each-agent"],
+    category: 'support', group: 'is_it_possible_to_change_the_amount_of_t', tier: 'g' },
+
+  // Waiting Time Limit (Legacy) — GENERIC (overview only)
+  { keys: ["queue", "call queue", "wait queue", "hold queue"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/207412273-Waiting-Time-Limit-Legacy"],
+    category: 'support', group: 'waiting_time_limit_legacy', tier: 'g' },
+
+  // Waiting Time Limit (Legacy) — SPECIFIC: Callback
+  { keys: ["queue callback", "callback from queue"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/210132113-Queue-Callback-Legacy", "https://support.talkdesk.com/hc/en-us/articles/200979305-Activating-the-Queue-Callback-Legacy", "https://support.talkdesk.com/hc/en-us/articles/202644189-Customizing-the-Queue-Callback-Message-Legacy", "https://support.talkdesk.com/hc/en-us/articles/207482886-Customizing-the-Unsuccessful-Queue-Callback-Message-Legacy"],
+    category: 'support', group: 'waiting_time_limit_legacy', tier: 's' },
+
+  // Waiting Time Limit (Legacy) — SPECIFIC: Voicemail
+  { keys: ["queue voicemail", "queue to voicemail"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200979215-Activating-the-Queue-to-Voicemail-Legacy", "https://support.talkdesk.com/hc/en-us/articles/200587379-Redirecting-Calls-to-Voicemail-rather-than-the-Waiting-Queue-Legacy"],
+    category: 'support', group: 'waiting_time_limit_legacy', tier: 's' },
+
+  // Waiting Time Limit (Legacy) — SPECIFIC: Maximum Queue
+  { keys: ["max queue size", "queue limit"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200585689-Maximum-Queue-Size-Legacy"],
+    category: 'support', group: 'waiting_time_limit_legacy', tier: 's' },
+
+  // Are there numbers that I cannot call from Talkdesk? — GENERIC (overview only)
+  { keys: ["agent faq", "using talkdesk faq"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/201171679-Are-there-numbers-that-I-cannot-call-from-Talkdesk"],
+    category: 'support', group: 'are_there_numbers_that_i_cannot_call_fro', tier: 'g' },
+
+  // Contact Sync FAQ — GENERIC (overview only)
+  { keys: ["integration faq", "contact sync"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/115000294003-Contact-Sync-FAQ"],
+    category: 'support', group: 'contact_sync_faq', tier: 'g' },
+
+  // Freshdesk Integration Activation — GENERIC (overview only)
+  { keys: ["freshdesk", "freshdesk integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/201394995-Freshdesk-Integration-Activation"],
+    category: 'integrations', group: 'freshdesk_integration_activation', tier: 'g' },
+
+  // LiveChat Integration Activation — GENERIC (overview only)
+  { keys: ["livechat", "livechat integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200957959-LiveChat-Integration-Activation"],
+    category: 'integrations', group: 'livechat_integration_activation', tier: 'g' },
+
+  // Help Scout Integration Activation — GENERIC (overview only)
+  { keys: ["help scout", "helpscout"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200958849-Help-Scout-Integration-Activation"],
+    category: 'integrations', group: 'help_scout_integration_activation', tier: 'g' },
+
+  // Pipedrive Integration Activation — GENERIC (overview only)
+  { keys: ["pipedrive", "pipedrive crm"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200959269-Pipedrive-Integration-Activation"],
+    category: 'integrations', group: 'pipedrive_integration_activation', tier: 'g' },
+
+  // Zoho Integration Activation — GENERIC (overview only)
+  { keys: ["zoho", "zoho integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200959709-Zoho-Integration-Activation"],
+    category: 'integrations', group: 'zoho_integration_activation', tier: 'g' },
+
+  // Google Contacts Integration Activation — GENERIC (overview only)
+  { keys: ["google contacts integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200959869-Google-Contacts-Integration-Activation"],
+    category: 'integrations', group: 'google_contacts_integration_activation', tier: 'g' },
+
+  // OnePageCRM Integration Activation — GENERIC (overview only)
+  { keys: ["onepagecrm", "onePagecrm integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/201394575-OnePageCRM-Integration-Activation"],
+    category: 'integrations', group: 'onepagecrm_integration_activation', tier: 'g' },
+
+  // Automating tasks in your Highrise Integration — GENERIC (overview only)
+  { keys: ["highrise", "highrise integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/201431935-Automating-tasks-in-your-Highrise-Integration"],
+    category: 'integrations', group: 'automating_tasks_in_your_highrise_integr', tier: 'g' },
+
+  // Headset not recognized — GENERIC (overview only)
+  { keys: ["call quality", "audio issues", "call issues", "headset not working", "microphone issue"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/44198094704795-Headset-not-recognized"],
+    category: 'support', group: 'headset_not_recognized', tier: 'g' },
+
+  // Headset not recognized — SPECIFIC: Voice Trace
+  { keys: ["enable voice trace", "voice trace"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/26362442539675-Enable-Voice-Trace"],
+    category: 'support', group: 'headset_not_recognized', tier: 's' },
+
+  // Headset not recognized — SPECIFIC: Headset not recognized
+  { keys: ["headset not recognized", "headset detection"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/44198094704795-Headset-not-recognized"],
+    category: 'support', group: 'headset_not_recognized', tier: 's' },
+
+  // Headset not recognized — SPECIFIC: call controls
+  { keys: ["headset call controls", "headset buttons"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/44198006346395-Headset-call-controls-not-working"],
+    category: 'support', group: 'headset_not_recognized', tier: 's' },
+
+  // Click to Call — GENERIC (overview only)
+  { keys: ["click to call", "click2call", "chrome extension click"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200370369-Click-to-Call"],
+    category: 'support', group: 'click_to_call', tier: 'g' },
+
+  // Olark Integration Activation — GENERIC (overview only)
+  { keys: ["olark", "olark integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/204506085-Olark-Integration-Activation"],
+    category: 'integrations', group: 'olark_integration_activation', tier: 'g' },
+
+  // Nimble Integration Activation — GENERIC (overview only)
+  { keys: ["nimble", "nimble crm"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/201392975-Nimble-Integration-Activation"],
+    category: 'integrations', group: 'nimble_integration_activation', tier: 'g' },
+
+  // Automation Tools — GENERIC (overview only)
+  { keys: ["automated tasks", "automations", "crm automation", "integration automation"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360059553151-Automation-Tools"],
+    category: 'integrations', group: 'automation_tools', tier: 'g' },
+
+  // Automation Tools — SPECIFIC: Filters
+  { keys: ["automation filters"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/204989529-Automated-Tasks-Filters"],
+    category: 'integrations', group: 'automation_tools', tier: 's' },
+
+  // Automation Tools — SPECIFIC: Fields
+  { keys: ["automation fields"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360022536671-Automated-Tasks-Fields"],
+    category: 'integrations', group: 'automation_tools', tier: 's' },
+
+  // UserVoice Integration Activation — GENERIC (overview only)
+  { keys: ["uservoice", "uservoice integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/202595189-UserVoice-Integration-Activation"],
+    category: 'integrations', group: 'uservoice_integration_activation', tier: 'g' },
+
+  // Installing Talkdesk Click-to-Call Extension — GENERIC (overview only)
+  { keys: ["click to call", "click2call", "chrome extension click"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/204965789-Installing-Talkdesk-Click-to-Call-Extension"],
+    category: 'support', group: 'installing_talkdesk_click_to_call_extens', tier: 'g' },
+
+  // Setting up an IVR (Legacy) — GENERIC (overview only)
+  { keys: ["ivr", "interactive voice response", "ivr menu", "dtmf"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/207007006-Setting-up-an-IVR-Legacy"],
+    category: 'support', group: 'setting_up_an_ivr_legacy', tier: 'g' },
+
+  // Keap (Infusionsoft) Activation — GENERIC (overview only)
+  { keys: ["keap", "infusionsoft"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/203914049-Keap-Infusionsoft-Activation"],
+    category: 'integrations', group: 'keap_infusionsoft_activation', tier: 'g' },
+
+  // BigCommerce Integration Activation — GENERIC (overview only)
+  { keys: ["bigcommerce", "bigcommerce integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/203974109-BigCommerce-Integration-Activation"],
+    category: 'integrations', group: 'bigcommerce_integration_activation', tier: 'g' },
+
+  // Shopify Integration Activation — GENERIC (overview only)
+  { keys: ["shopify", "shopify integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/203807189-Shopify-Integration-Activation"],
+    category: 'integrations', group: 'shopify_integration_activation', tier: 'g' },
+
+  // Intercom Integration Activation — GENERIC (overview only)
+  { keys: ["intercom", "intercom integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/204152659-Intercom-Integration-Activation"],
+    category: 'integrations', group: 'intercom_integration_activation', tier: 'g' },
+
+  // SnapEngage Integration Activation — GENERIC (overview only)
+  { keys: ["snapengage"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/204246589-SnapEngage-Integration-Activation"],
+    category: 'integrations', group: 'snapengage_integration_activation', tier: 'g' },
+
+  // Using “Relate to” in Talkdesk Microsoft Dynamics 365 Connector (Conversations) — GENERIC (overview only)
+  { keys: ["dynamics", "dynamics 365", "microsoft dynamics"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/34148358997659-Using-Relate-to-in-Talkdesk-Microsoft-Dynamics-365-Connector-Conversations"],
+    category: 'integrations', group: 'using_relate_to_in_talkdesk_microsoft_dy', tier: 'g' },
+
+  // Using “Relate to” in Talkdesk Microsoft Dynamics 365 Connector (Conversations) — SPECIFIC: Click-to-Call
+  { keys: ["dynamics click to call", "dynamics contact pop"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360057391832-Using-Dynamics-365-Click-to-Call-and-Contact-Pop"],
+    category: 'integrations', group: 'using_relate_to_in_talkdesk_microsoft_dy', tier: 's' },
+
+  // Using “Relate to” in Talkdesk Microsoft Dynamics 365 Connector (Conversations) — SPECIFIC: Automating
+  { keys: ["dynamics automate", "dynamics automation"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360039696111-Automating-Tasks-in-your-Dynamics-365-Integration"],
+    category: 'integrations', group: 'using_relate_to_in_talkdesk_microsoft_dy', tier: 's' },
+
+  // Using “Relate to” in Talkdesk Microsoft Dynamics 365 Connector (Conversations) — SPECIFIC: Relate
+  { keys: ["dynamics relate to"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/34148358997659-Using-Relate-to-in-Talkdesk-Microsoft-Dynamics-365-Connector-Conversations", "https://support.talkdesk.com/hc/en-us/articles/34148219845787-Enabling-Relate-to-in-Talkdesk-Microsoft-Dynamics-365-Connector"],
+    category: 'integrations', group: 'using_relate_to_in_talkdesk_microsoft_dy', tier: 's' },
+
+  // Using “Relate to” in Talkdesk Microsoft Dynamics 365 Connector (Conversations) — SPECIFIC: Activities
+  { keys: ["dynamics activities"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/6600045648283-Talkdesk-Activities-in-Dynamics-365"],
+    category: 'integrations', group: 'using_relate_to_in_talkdesk_microsoft_dy', tier: 's' },
+
+  // Subscription Tab, Adding Licenses, and Managing Seats — GENERIC (overview only)
+  { keys: ["subscription", "licenses", "seats", "license management"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/8265653015195-Subscription-Tab-Adding-Licenses-and-Managing-Seats"],
+    category: 'support', group: 'subscription_tab_adding_licenses_and_man', tier: 'g' },
+
+  // Using Talkdesk for Slack — GENERIC (overview only)
+  { keys: ["slack", "talkdesk slack"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/208654046-Talkdesk-for-Slack-Automations-Guide"],
+    category: 'integrations', group: 'using_talkdesk_for_slack', tier: 'g' },
+
+  // Using Talkdesk for Slack — SPECIFIC: Coaching
+  { keys: ["slack coaching"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/211298023-Coaching-Agents-using-Slack"],
+    category: 'integrations', group: 'using_talkdesk_for_slack', tier: 's' },
+
+  // Using Talkdesk for Slack — SPECIFIC: Automation
+  { keys: ["slack automation", "slack automate"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/210018943-Creating-Automations-in-your-Talkdesk-for-Slack-Integration", "https://support.talkdesk.com/hc/en-us/articles/208654046-Talkdesk-for-Slack-Automations-Guide"],
+    category: 'integrations', group: 'using_talkdesk_for_slack', tier: 's' },
+
+  // Talkdesk for Salesforce: Open CTI Retirement - FAQ — GENERIC (overview only)
+  { keys: ["salesforce", "talkdesk for salesforce", "sfdc", "salesforce connector"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/46883206309147-Talkdesk-for-Salesforce-Open-CTI-Retirement-FAQ", "https://support.talkdesk.com/hc/en-us/articles/210281453-Talkdesk-for-Salesforce-FAQ-New-Customers", "https://support.talkdesk.com/hc/en-us/articles/12718640549531-Salesforce-Enhanced-Domains-Overview"],
+    category: 'integrations', group: 'talkdesk_for_salesforce_open_cti_retirem', tier: 'g' },
+
+  // Talkdesk for Salesforce: Open CTI Retirement - FAQ — SPECIFIC: Click
+  { keys: ["salesforce click to call", "salesforce cti"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/26291642012827-Talkdesk-Click-To-in-Salesforce", "https://support.talkdesk.com/hc/en-us/articles/360050209092-Enabling-the-Salesforce-Mobile-Click-to-Call", "https://support.talkdesk.com/hc/en-us/articles/115002422263-Enabling-Click-to-Call-for-Cases-in-Salesforce"],
+    category: 'integrations', group: 'talkdesk_for_salesforce_open_cti_retirem', tier: 's' },
+
+  // Talkdesk for Salesforce: Open CTI Retirement - FAQ — SPECIFIC: Automation
+  { keys: ["salesforce automation", "salesforce automate"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/24044135014811-Salesforce-Record-Types-in-Automations", "https://support.talkdesk.com/hc/en-us/articles/214595386-Talkdesk-for-Salesforce-Automations", "https://support.talkdesk.com/hc/en-us/articles/360034667871-Salesforce-Lightning-Flows-from-Automations"],
+    category: 'integrations', group: 'talkdesk_for_salesforce_open_cti_retirem', tier: 's' },
+
+  // Talkdesk for Salesforce: Open CTI Retirement - FAQ — SPECIFIC: Presence
+  { keys: ["salesforce omnichannel", "salesforce presence"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/8154843549467-Managing-Talkdesk-for-Salesforce-Presence-Sync-Rules-for-Salesforce-omnichannel", "https://support.talkdesk.com/hc/en-us/articles/8151323155611-Talkdesk-for-Salesforce-Presence-Sync-Rules-for-Salesforce-Omnichannel"],
+    category: 'integrations', group: 'talkdesk_for_salesforce_open_cti_retirem', tier: 's' },
+
+  // Talkdesk for Salesforce: Open CTI Retirement - FAQ — SPECIFIC: Relate
+  { keys: ["salesforce relate to"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4412966131995-Using-Talkdesk-for-Salesforce-Relate-to-in-Conversations", "https://support.talkdesk.com/hc/en-us/articles/360042396791-Enabling-and-Configuring-Salesforce-Relate-To", "https://support.talkdesk.com/hc/en-us/articles/360042392951-Using-Salesforce-Relate-To", "https://support.talkdesk.com/hc/en-us/articles/115001185803-Showing-Related-Talkdesk-Activities-on-Salesforce-Accounts"],
+    category: 'integrations', group: 'talkdesk_for_salesforce_open_cti_retirem', tier: 's' },
+
+  // Talkdesk for Salesforce: Open CTI Retirement - FAQ — SPECIFIC: SMS
+  { keys: ["salesforce sms"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360046290432-Enabling-SMS-for-Lightning-Flows", "https://support.talkdesk.com/hc/en-us/articles/115000482626-Salesforce-SMS-Component", "https://support.talkdesk.com/hc/en-us/articles/360034361252-Salesforce-Smart-SMS"],
+    category: 'integrations', group: 'talkdesk_for_salesforce_open_cti_retirem', tier: 's' },
+
+  // Talkdesk for Salesforce: Open CTI Retirement - FAQ — SPECIFIC: Lightning
+  { keys: ["salesforce lightning", "salesforce conversations app"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360046290432-Enabling-SMS-for-Lightning-Flows", "https://support.talkdesk.com/hc/en-us/articles/360024578111-Adding-Conversations-App-to-Salesforce-Lightning-apps", "https://support.talkdesk.com/hc/en-us/articles/360034667871-Salesforce-Lightning-Flows-from-Automations"],
+    category: 'integrations', group: 'talkdesk_for_salesforce_open_cti_retirem', tier: 's' },
+
+  // Talkdesk for Salesforce: Open CTI Retirement - FAQ — SPECIFIC: Sales Engagement
+  { keys: ["salesforce sales engagement", "outreach salesforce"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360054490451-Setting-up-Sales-Engagement", "https://support.talkdesk.com/hc/en-us/articles/360054492891-Using-Salesforce-Sales-Engagement"],
+    category: 'integrations', group: 'talkdesk_for_salesforce_open_cti_retirem', tier: 's' },
+
+  // Types of User Network Connections — GENERIC (overview only)
+  { keys: ["network", "firewall", "network requirements", "voip network", "bandwidth"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/18935871264155-Types-of-User-Network-Connections"],
+    category: 'support', group: 'types_of_user_network_connections', tier: 'g' },
+
+  // Types of User Network Connections — SPECIFIC: Firewall
+  { keys: ["firewall configuration", "firewall rules", "ip allowlist"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/210173043-Network-Setup-Firewall-Configurations"],
+    category: 'support', group: 'types_of_user_network_connections', tier: 's' },
+
+  // Types of User Network Connections — SPECIFIC: Quality of Service
+  { keys: ["qos", "quality of service", "network ports"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/8040747099419-Network-Setup-Quality-of-Service-QoS-Ports"],
+    category: 'support', group: 'types_of_user_network_connections', tier: 's' },
+
+  // Managing Kustomer Custom Fields — GENERIC (overview only)
+  { keys: ["kustomer", "kustomer integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360054978431-Managing-Kustomer-Custom-Fields"],
+    category: 'integrations', group: 'managing_kustomer_custom_fields', tier: 'g' },
+
+  // Front Integration Activation — GENERIC (overview only)
+  { keys: ["front", "front app integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/115001703246-Front-Integration-Activation"],
+    category: 'integrations', group: 'front_integration_activation', tier: 'g' },
+
+  // Configuring Talkdesk Embedded in ServiceNow — GENERIC (overview only)
+  { keys: ["servicenow", "service now", "servicenow connector"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/36293288411803-Configuring-Talkdesk-Embedded-in-ServiceNow"],
+    category: 'integrations', group: 'configuring_talkdesk_embedded_in_service', tier: 'g' },
+
+  // Configuring Talkdesk Embedded in ServiceNow — SPECIFIC: Automating
+  { keys: ["servicenow automate", "servicenow automation"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/115004271666-Automating-Tasks-in-the-ServiceNow-Connector"],
+    category: 'integrations', group: 'configuring_talkdesk_embedded_in_service', tier: 's' },
+
+  // Configuring Talkdesk Embedded in ServiceNow — SPECIFIC: Click-to-Call
+  { keys: ["servicenow click to call", "servicenow contact pop"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360052568592-Talkdesk-ServiceNow-Connector-Click-to-Call-and-Contact-Pop"],
+    category: 'integrations', group: 'configuring_talkdesk_embedded_in_service', tier: 's' },
+
+  // Configuring Talkdesk Embedded in ServiceNow — SPECIFIC: Relate To
+  { keys: ["servicenow relate to"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360060711412-Enabling-Relate-To-in-Talkdesk-ServiceNow-Connector", "https://support.talkdesk.com/hc/en-us/articles/4412965304603-Using-Relate-To-in-Talkdesk-ServiceNow-Connector-Conversations"],
+    category: 'integrations', group: 'configuring_talkdesk_embedded_in_service', tier: 's' },
+
+  // Configuring Talkdesk Embedded in ServiceNow — SPECIFIC: CSM
+  { keys: ["servicenow csm", "servicenow itsm"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360050217131-Enabling-CSM-ITSM-in-Talkdesk-ServiceNow-Connector"],
+    category: 'integrations', group: 'configuring_talkdesk_embedded_in_service', tier: 's' },
+
+  // Configuring Talkdesk Embedded in ServiceNow — SPECIFIC: Activities in ServiceNow
+  { keys: ["servicenow activities", "talkdesk activities servicenow"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/9614706436507-Talkdesk-Activities-in-ServiceNow"],
+    category: 'integrations', group: 'configuring_talkdesk_embedded_in_service', tier: 's' },
+
+  // Freshservice Integration Activation — GENERIC (overview only)
+  { keys: ["freshservice", "freshservice integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/115005870946-Freshservice-Integration-Activation"],
+    category: 'integrations', group: 'freshservice_integration_activation', tier: 'g' },
+
+  // Okta SSO Activation — GENERIC (overview only)
+  { keys: ["sso", "saml", "single sign on", "okta", "identity provider", "idp", "scim"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/211155323-Okta-SSO-Activation"],
+    category: 'support', group: 'okta_sso_activation', tier: 'g' },
+
+  // Okta SSO Activation — SPECIFIC: Okta
+  { keys: ["okta sso", "okta setup"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/211155323-Okta-SSO-Activation", "https://support.talkdesk.com/hc/en-us/articles/37061941941403-SAML-SSO-OKTA"],
+    category: 'support', group: 'okta_sso_activation', tier: 's' },
+
+  // Okta SSO Activation — SPECIFIC: OneLogin
+  { keys: ["onelogin sso", "onelogin"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/115000285626-OneLogin-SSO-Activation"],
+    category: 'support', group: 'okta_sso_activation', tier: 's' },
+
+  // Okta SSO Activation — SPECIFIC: Active Directory
+  { keys: ["active directory sso", "adfs", "azure ad sso"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360020821111-SAML-SSO-Active-Directory-Federation-Services"],
+    category: 'support', group: 'okta_sso_activation', tier: 's' },
+
+  // Understanding Autopilot Contact Types in Explore Contacts Reports — GENERIC (overview only)
+  { keys: ["explore", "talkdesk explore", "reporting", "reports", "dashboards", " report "],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360026412572-Talkdesk-Explore-Overview", "https://support.talkdesk.com/hc/en-us/articles/360033182892-Talkdesk-Explore-FAQ", "https://support.talkdesk.com/hc/en-us/articles/30439542579227-Introducing-Custom-Data-Fields-Overview", "https://support.talkdesk.com/hc/en-us/articles/7466066180635-Explore-API-Calls-Report-Overview", "https://support.talkdesk.com/hc/en-us/articles/4555692432027-Explore-New-Landing-Page-Overview", "https://support.talkdesk.com/hc/en-us/articles/360035336152-Custom-Table-Calculations-Functions-Overview"],
+    category: 'support', group: 'understanding_autopilot_contact_types_in', tier: 'g' },
+
+  // Understanding Autopilot Contact Types in Explore Contacts Reports — SPECIFIC: Custom Report
+  { keys: ["explore custom report", "create report", "custom dataset"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360032266452-Creating-Custom-Reports-in-Talkdesk-Explore", "https://support.talkdesk.com/hc/en-us/articles/4555922305051-Explore-Duplicating-Custom-Reports-and-Dashboards", "https://support.talkdesk.com/hc/en-us/articles/4410629791387-Sharing-Custom-Reports-and-Dashboards-in-Talkdesk-Explore"],
+    category: 'support', group: 'understanding_autopilot_contact_types_in', tier: 's' },
+
+  // Understanding Autopilot Contact Types in Explore Contacts Reports — SPECIFIC: Schedule
+  { keys: ["explore schedule", "scheduled report"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360026393531-Creating-Schedules"],
+    category: 'support', group: 'understanding_autopilot_contact_types_in', tier: 's' },
+
+  // Understanding Autopilot Contact Types in Explore Contacts Reports — SPECIFIC: API
+  { keys: ["explore api report", "explore api"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/7466066180635-Explore-API-Calls-Report-Overview"],
+    category: 'support', group: 'understanding_autopilot_contact_types_in', tier: 's' },
+
+  // Understanding Autopilot Contact Types in Explore Contacts Reports — SPECIFIC: Filter
+  { keys: ["explore filter", "explore filtering"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360026709891-Filtering-Dashboards-and-Reports", "https://support.talkdesk.com/hc/en-us/articles/360033583372-Filters-and-Filtering-in-Create", "https://support.talkdesk.com/hc/en-us/articles/360039290652-Contact-Level-Filtering-in-Explore-New-Data-Model"],
+    category: 'support', group: 'understanding_autopilot_contact_types_in', tier: 's' },
+
+  // Understanding Autopilot Contact Types in Explore Contacts Reports — SPECIFIC: Pivot
+  { keys: ["explore pivot", "pivot table"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4405143587611-Creating-and-Managing-Pivot-Tables-in-Microsoft-Excel"],
+    category: 'support', group: 'understanding_autopilot_contact_types_in', tier: 's' },
+
+  // Understanding Autopilot Contact Types in Explore Contacts Reports — SPECIFIC: Sharing
+  { keys: ["explore share", "sharing report"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4410629791387-Sharing-Custom-Reports-and-Dashboards-in-Talkdesk-Explore"],
+    category: 'support', group: 'understanding_autopilot_contact_types_in', tier: 's' },
+
+  // Understanding Autopilot Contact Types in Explore Contacts Reports — SPECIFIC: Visualization
+  { keys: ["explore visualization", "heatmap"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/24269487191451-Reporting-Data-Access-and-Visualization", "https://support.talkdesk.com/hc/en-us/articles/360032619131-Customizing-Visualizations", "https://support.talkdesk.com/hc/en-us/articles/360041333112-Editing-Options-for-Visualization-Tables", "https://support.talkdesk.com/hc/en-us/articles/360042000691-Setting-Up-a-Visualizations-Heatmap-Table"],
+    category: 'support', group: 'understanding_autopilot_contact_types_in', tier: 's' },
+
+  // Understanding Autopilot Contact Types in Explore Contacts Reports — SPECIFIC: Download
+  { keys: ["explore download", "download report", "export report"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360026711371-Downloading-and-Sending-Dashboards", "https://support.talkdesk.com/hc/en-us/articles/360027457832-Downloading-and-Sending-Reports"],
+    category: 'support', group: 'understanding_autopilot_contact_types_in', tier: 's' },
+
+  // Talkdesk Conversations Mobile App: Overview — GENERIC (overview only)
+  { keys: ["conversations mobile", "mobile agent", "ios app", "android app", "mobile"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360034497372-Talkdesk-Conversations-Mobile-App-Overview"],
+    category: 'support', group: 'talkdesk_conversations_mobile_app_overvi', tier: 'g' },
+
+  // Live Sentinel v1.0 — GENERIC (overview only)
+  { keys: ["live", "talkdesk live", "real time monitoring", "live dashboard", "wallboard", "dashboard"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360039023791-Talkdesk-Live-Overview", "https://support.talkdesk.com/hc/en-us/articles/360053051152-Talkdesk-Live-FAQ", "https://support.talkdesk.com/hc/en-us/articles/360039024591-Configuring-Talkdesk-Live-Widgets-Overview", "https://support.talkdesk.com/hc/en-us/articles/5862459555995-Live-Monitoring-Overview"],
+    category: 'support', group: 'live_sentinel_v1_0', tier: 'g' },
+
+  // Live Sentinel v1.0 — SPECIFIC: Live Agents List
+  { keys: ["live agents list", "live agents widget"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4409606243867-Live-Agents-List"],
+    category: 'support', group: 'live_sentinel_v1_0', tier: 's' },
+
+  // Live Sentinel v1.0 — SPECIFIC: Live Contacts
+  { keys: ["live contacts", "live contacts widget"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360053912852-Managing-Live-Agents-and-Live-Contacts-Widgets", "https://support.talkdesk.com/hc/en-us/articles/4409602656667-Live-Contacts-Inbound", "https://support.talkdesk.com/hc/en-us/articles/4409682881179-Live-Contacts-Outbound", "https://support.talkdesk.com/hc/en-us/articles/4409665262875-Live-Contacts-List", "https://support.talkdesk.com/hc/en-us/articles/4409656687771-Live-Contacts-in-Progress-Outbound", "https://support.talkdesk.com/hc/en-us/articles/4409656573083-Live-Contacts-in-Progress-Inbound", "https://support.talkdesk.com/hc/en-us/articles/4409665251611-Live-Contacts-in-Queue"],
+    category: 'support', group: 'live_sentinel_v1_0', tier: 's' },
+
+  // Live Sentinel v1.0 — SPECIFIC: Service Level
+  { keys: ["live service level", "service level live"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4409690831259-Service-Level"],
+    category: 'support', group: 'live_sentinel_v1_0', tier: 's' },
+
+  // Live Sentinel v1.0 — SPECIFIC: Abandon Rate
+  { keys: ["live abandon rate", "abandon rate"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4409581637787-Abandon-Rate"],
+    category: 'support', group: 'live_sentinel_v1_0', tier: 's' },
+
+  // Live Sentinel v1.0 — SPECIFIC: Sentinel
+  { keys: ["live sentinel", "sentinel"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/39200294932379-Live-Sentinel-v1-0"],
+    category: 'support', group: 'live_sentinel_v1_0', tier: 's' },
+
+  // Live Sentinel v1.0 — SPECIFIC: Outbound
+  { keys: ["live outbound campaigns", "outbound live"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/23457836189467-Outbound-Live-Campaigns", "https://support.talkdesk.com/hc/en-us/articles/14078111012891-Outbound-Live-Agents-per-Campaign", "https://support.talkdesk.com/hc/en-us/articles/4409690658459-Outbound-Contacts", "https://support.talkdesk.com/hc/en-us/articles/4409683488155-Not-Connected-Contacts-Outbound", "https://support.talkdesk.com/hc/en-us/articles/4409682881179-Live-Contacts-Outbound", "https://support.talkdesk.com/hc/en-us/articles/4409656687771-Live-Contacts-in-Progress-Outbound", "https://support.talkdesk.com/hc/en-us/articles/4409582727323-Connected-Contacts-Outbound"],
+    category: 'support', group: 'live_sentinel_v1_0', tier: 's' },
+
+  // Security & Compliance — GENERIC (overview only)
+  { keys: ["security", "compliance", "data privacy", "hipaa"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360041380971-Talkdesk-Secure-Payments",
+      "https://support.talkdesk.com/hc/en-us/articles/360004095931-Talkdesk-and-GDPR",
+      "https://support.talkdesk.com/hc/en-us/articles/4404424241947-E911-Overview-and-Enablement"
+    ],
+    category: 'support', group: 'deletion_and_export_procedures', tier: 'g' },
+
+  // Security — SPECIFIC: E911
+  { keys: ["e911", "emergency calling", "911"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4404424241947-E911-Overview-and-Enablement", "https://support.talkdesk.com/hc/en-us/articles/4404418367899-E911-Setting-up-Emergency-Information"],
+    category: 'support', group: 'deletion_and_export_procedures', tier: 's' },
+
+  // Security — SPECIFIC: GDPR
+  { keys: ["gdpr", "data deletion", "right to be forgotten"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360004095931-Talkdesk-and-GDPR"],
+    category: 'support', group: 'deletion_and_export_procedures', tier: 's' },
+
+  // Security — SPECIFIC: PCI / Secure Payments
+  { keys: ["pci", "pci compliance", "pci dss", "pci pal", "payment compliance", "secure payments", "card payment"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360041380971-Talkdesk-Secure-Payments"],
+    category: 'support', group: 'deletion_and_export_procedures', tier: 's' },
+
+  // Security — SPECIFIC: SHAKEN
+  { keys: ["shaken stir", "call attestation", "spam calls"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4403164259995-SHAKEN-STIR-US"],
+    category: 'support', group: 'deletion_and_export_procedures', tier: 's' },
+
+  // Security — SPECIFIC: SMS Legal
+  { keys: ["sms legal", "sms compliance", "message compliance"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/115001117663-SMS-Legal-Best-Practices"],
+    category: 'support', group: 'deletion_and_export_procedures', tier: 's' },
+
+  // Security — SPECIFIC: OFCOM
+  { keys: ["ofcom", "uk compliance"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/10080208276891-UK-OFCOM-Best-Practices"],
+    category: 'support', group: 'deletion_and_export_procedures', tier: 's' },
+
+  // HIPAA — standalone
+  { keys: ["hipaa", "hippa", "hipaa compliance", "hipaa healthcare"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360041380971-Talkdesk-Secure-Payments",
+      "https://support.talkdesk.com/hc/en-us/articles/4408616300571-Healthcare-Experience-Cloud-for-Providers-Overview"
+    ],
+    category: 'support', group: 'hipaa_standalone', tier: 'g' },
+
+  // PII — standalone (redaction + GDPR)
+  { keys: [" pii ", "personally identifiable", "personal data", "data masking"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/15589676704155-Interaction-Analytics-Redaction-Feature",
+      "https://support.talkdesk.com/hc/en-us/articles/360004095931-Talkdesk-and-GDPR"
+    ],
+    category: 'support', group: 'pii_standalone', tier: 'g' },
+
+  // Managing Lists: Overview — GENERIC (overview only)
+  { keys: ["dialer", "outbound dialer", "power dialer", "preview dialer", "outbound campaign", "outbound", " campaign "],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/15394856333339-Managing-Lists-Overview", "https://support.talkdesk.com/hc/en-us/articles/9865745786267-Answering-Machine-Detection-AMD-Overview", "https://support.talkdesk.com/hc/en-us/articles/10080090454043-Campaign-Dialing-Order-Overview", "https://support.talkdesk.com/hc/en-us/articles/9251026672411-Managing-Campaigns-Overview", "https://support.talkdesk.com/hc/en-us/articles/13240536285211-Preview-Dialer-Overview"],
+    category: 'support', group: 'managing_lists_overview', tier: 'g' },
+
+  // Managing Lists: Overview — SPECIFIC: Lists
+  { keys: ["dialer list", "calling list", "contact list dialer"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/15394856333339-Managing-Lists-Overview"],
+    category: 'support', group: 'managing_lists_overview', tier: 's' },
+
+  // Managing Lists: Overview — SPECIFIC: AMD
+  { keys: ["answering machine detection", "amd", "voicemail detection"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/9865745786267-Answering-Machine-Detection-AMD-Overview"],
+    category: 'support', group: 'managing_lists_overview', tier: 's' },
+
+  // Managing Lists: Overview — SPECIFIC: DNCL
+  { keys: ["dnc", "do not call list"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/12206639625371-Adding-a-record-to-DNCL-in-Conversations"],
+    category: 'support', group: 'managing_lists_overview', tier: 's' },
+
+  // Managing Lists: Overview — SPECIFIC: Reporting
+  { keys: ["dialer reporting", "dialer report"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360044899672-Accessing-the-Talkdesk-Dialer-Reporting"],
+    category: 'support', group: 'managing_lists_overview', tier: 's' },
+
+  // WFM: Meeting Finder – Step‑by‑Step Guide — GENERIC (overview only)
+  { keys: ["workforce management", "wfm", "scheduling", "workforce", "forecasting", "staffing", "adherence"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/45743209274523-WFM-Meeting-Finder-Step-by-Step-Guide", "https://support.talkdesk.com/hc/en-us/articles/360043948512-Workforce-Management-Overview", "https://support.talkdesk.com/hc/en-us/articles/360043949352-Getting-Started-with-Workforce-Management", "https://support.talkdesk.com/hc/en-us/articles/4431454863259-WFM-Reports-Guide", "https://support.talkdesk.com/hc/en-us/articles/9810940177819-WFM-General-FAQ"],
+    category: 'support', group: 'wfm_meeting_finder_step_by_step_guide', tier: 'g' },
+
+  // WFM: Meeting Finder – Step‑by‑Step Guide — SPECIFIC: Forecasting
+  { keys: ["wfm forecasting", "call volume forecast", "forecast", "forecasting", "staffing forecast"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/39532513549211-Workforce-Management-Forecasting"],
+    category: 'support', group: 'wfm_meeting_finder_step_by_step_guide', tier: 's' },
+
+  // WFM: Meeting Finder – Step‑by‑Step Guide — SPECIFIC: Scheduling
+  { keys: ["wfm scheduling", "agent schedule", "shift schedule", "schedule", "shift", "scheduling", "agent scheduling"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/39533496995099-Workforce-Management-Scheduling"],
+    category: 'support', group: 'wfm_meeting_finder_step_by_step_guide', tier: 's' },
+
+  // WFM: Meeting Finder – Step‑by‑Step Guide — SPECIFIC: Adherence
+  { keys: ["wfm adherence", "schedule adherence"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/44290701272731--Preview-WFM-Agents-Live-Adherence"],
+    category: 'support', group: 'wfm_meeting_finder_step_by_step_guide', tier: 's' },
+
+  // WFM: Meeting Finder – Step‑by‑Step Guide — SPECIFIC: Time Off
+  { keys: ["wfm time off", "shift time off", "time off", "pto", "vacation", "sick leave", "time off request", "leave request"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/36738388917019-WFM-Time-Off-Automation"],
+    category: 'support', group: 'wfm_meeting_finder_step_by_step_guide', tier: 's' },
+
+  // WFM: Meeting Finder – Step‑by‑Step Guide — SPECIFIC: Meeting
+  { keys: ["wfm meeting", "meeting finder"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/45743209274523-WFM-Meeting-Finder-Step-by-Step-Guide"],
+    category: 'support', group: 'wfm_meeting_finder_step_by_step_guide', tier: 's' },
+
+  // Copilot: Overview — GENERIC (overview only)
+  { keys: ["copilot", "agent assist", "real time transcription", "transcription", "agent recommendations", "transcript"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360045123011-Copilot-Overview", "https://support.talkdesk.com/hc/en-us/articles/46492603454491--Preview-Copilot-Agentic-Overview"],
+    category: 'support', group: 'copilot_overview', tier: 'g' },
+
+  // Copilot: Overview — SPECIFIC: Smart Scripts
+  { keys: ["copilot smart scripts", "smart scripts"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/13531571505307-Copilot-Smart-Scripts"],
+    category: 'support', group: 'copilot_overview', tier: 's' },
+
+  // Copilot: Overview — SPECIFIC: Automatic Summarization
+  { keys: ["copilot summarization", "auto summarization", "conversation summary", "after call work summary", " summary ", "call summary", "interaction summary"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/16761287647259-Copilot-Automatic-Summarization-Agent-Next-Steps-and-Disposition"],
+    category: 'support', group: 'copilot_overview', tier: 's' },
+
+  // Copilot: Overview — SPECIFIC: Intent Model
+  { keys: ["copilot intent model"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/13716952285467-Copilot-Intent-Model-Selection"],
+    category: 'support', group: 'copilot_overview', tier: 's' },
+
+  // Talkdesk Guardian Overview — GENERIC (overview only)
+  { keys: ["guardian", "compliance monitoring", "workforce compliance"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360052252892-Talkdesk-Guardian-Overview", "https://support.talkdesk.com/hc/en-us/articles/360060021272-Guardian-FAQ"],
+    category: 'support', group: 'talkdesk_guardian_overview', tier: 'g' },
+
+  // Talkdesk Guardian Overview — SPECIFIC: Users
+  { keys: ["guardian users", "guardian user data"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360058414091-Using-Talkdesk-Guardian-Users"],
+    category: 'support', group: 'talkdesk_guardian_overview', tier: 's' },
+
+  // Talkdesk Quality Management (QM): Overview — GENERIC (overview only)
+  { keys: ["quality management", "qm", "quality assurance", "call evaluation", "agent evaluation", "quality", "coaching"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360051136152-Talkdesk-Quality-Management-QM-Overview"],
+    category: 'support', group: 'talkdesk_quality_management_qm_overview', tier: 'g' },
+
+  // Talkdesk Quality Management (QM): Overview — SPECIFIC: Form
+  { keys: ["qm form", "evaluation form", "scorecard form", "evaluation", " scorecard "],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4418863655707-Adding-a-Form-Custom-Header", "https://support.talkdesk.com/hc/en-us/articles/4403986289051-Auto-Fail-Form-Option-in-QM", "https://support.talkdesk.com/hc/en-us/articles/5066415559323-Branching-Form-Option-in-QM", "https://support.talkdesk.com/hc/en-us/articles/360051607831-Forms-in-QM", "https://support.talkdesk.com/hc/en-us/articles/360051226552-Performing-Evaluations-in-QM"],
+    category: 'support', group: 'talkdesk_quality_management_qm_overview', tier: 's' },
+
+  // Talkdesk Quality Management (QM): Overview — SPECIFIC: Auto-Fail
+  { keys: ["qm auto fail", "auto fail"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4403986289051-Auto-Fail-Form-Option-in-QM"],
+    category: 'support', group: 'talkdesk_quality_management_qm_overview', tier: 's' },
+
+  // Talkdesk Quality Management (QM): Overview — SPECIFIC: Calibration
+  { keys: ["qm calibration", "calibration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4413116984475-Calibrations-in-QM"],
+    category: 'support', group: 'talkdesk_quality_management_qm_overview', tier: 's' },
+
+  // Talkdesk Quality Management (QM): Overview — SPECIFIC: Random Sampling
+  { keys: ["qm random sampling", "random sampling"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4405027623195-Random-Sampling-of-Calls-to-Evaluate-in-QM"],
+    category: 'support', group: 'talkdesk_quality_management_qm_overview', tier: 's' },
+
+  // Knowledge Management: Turning External Insights into Knowledge Cards — GENERIC (overview only)
+  { keys: ["knowledge management", "knowledge base", "knowledge articles", "km", "knowledge"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/31248792790555--Preview-Knowledge-Management-Custom-API-Connector-Configuration-Guide", "https://support.talkdesk.com/hc/en-us/articles/360057507031-Talkdesk-Knowledge-Management-Overview", "https://support.talkdesk.com/hc/en-us/articles/4893343995291-Knowledge-Management-Cards-FAQ", "https://support.talkdesk.com/hc/en-us/articles/30928392146203-Knowledge-Management-External-Source-I-Zendesk-Guide"],
+    category: 'support', group: 'knowledge_management_turning_external_in', tier: 'g' },
+
+  // Knowledge Management: Turning External Insights into Knowledge Cards — SPECIFIC: Knowledge Search in Copilot
+  { keys: ["knowledge management copilot", "km copilot", "knowledge search copilot"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/5441656429979-Knowledge-Management-Knowledge-Search-in-Copilot"],
+    category: 'support', group: 'knowledge_management_turning_external_in', tier: 's' },
+
+  // Knowledge Management: Turning External Insights into Knowledge Cards — SPECIFIC: Web Crawler
+  { keys: ["knowledge management web crawler", "web crawler", "km crawler"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/30932809308443-Knowledge-Management-External-Source-I-Web-Crawler"],
+    category: 'support', group: 'knowledge_management_turning_external_in', tier: 's' },
+
+  // Knowledge Management: Turning External Insights into Knowledge Cards — SPECIFIC: Salesforce Configuration
+  { keys: ["knowledge management salesforce", "km salesforce"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360052319932-Knowledge-Management-Salesforce-Configuration"],
+    category: 'support', group: 'knowledge_management_turning_external_in', tier: 's' },
+
+  // Knowledge Management: Turning External Insights into Knowledge Cards — SPECIFIC: Confluence
+  { keys: ["knowledge management confluence", "km confluence"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/30906754605083-Knowledge-Management-External-Sources-Confluence"],
+    category: 'support', group: 'knowledge_management_turning_external_in', tier: 's' },
+
+  // Knowledge Management: Turning External Insights into Knowledge Cards — SPECIFIC: Zendesk Guide
+  { keys: ["knowledge management zendesk guide", "km zendesk"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/30928392146203-Knowledge-Management-External-Source-I-Zendesk-Guide"],
+    category: 'support', group: 'knowledge_management_turning_external_in', tier: 's' },
+
+  // Knowledge Management: Turning External Insights into Knowledge Cards — SPECIFIC: ServiceNow
+  { keys: ["knowledge management servicenow", "km servicenow"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/30932396156315-Knowledge-Management-External-Source-I-ServiceNow"],
+    category: 'support', group: 'knowledge_management_turning_external_in', tier: 's' },
+
+  // Knowledge Management: Turning External Insights into Knowledge Cards — SPECIFIC: Cards
+  { keys: ["knowledge cards", "knowledge card"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/45531912719771-Knowledge-Management-Turning-External-Insights-into-Knowledge-Cards", "https://support.talkdesk.com/hc/en-us/articles/4893343995291-Knowledge-Management-Cards-FAQ", "https://support.talkdesk.com/hc/en-us/articles/4890860189467-Knowledge-Management-Using-Cards"],
+    category: 'support', group: 'knowledge_management_turning_external_in', tier: 's' },
+
+  // Interaction Analytics Roles and Permissions — GENERIC (overview only)
+  { keys: ["interaction analytics", "speech analytics", "conversation analytics", "sentiment analysis", "voice of customer", "analytics", "sentiment"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360058760372-Interaction-Analytics-Overview", "https://support.talkdesk.com/hc/en-us/articles/36183053530651-Customer-Experience-Analytics-Starter-Overview"],
+    category: 'support', group: 'interaction_analytics_roles_and_permissi', tier: 'g' },
+
+  // Interaction Analytics Roles and Permissions — SPECIFIC: Dashboard
+  { keys: ["interaction analytics dashboard"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360061348931-Using-Dashboards-with-Interaction-Analytics"],
+    category: 'support', group: 'interaction_analytics_roles_and_permissi', tier: 's' },
+
+  // Interaction Analytics Roles and Permissions — SPECIFIC: Search
+  { keys: ["interaction analytics search", "speech search"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360060227612-Using-Search-with-Interaction-Analytics", "https://support.talkdesk.com/hc/en-us/articles/4687500302875-Using-Advanced-Search-with-Interaction-Analytics"],
+    category: 'support', group: 'interaction_analytics_roles_and_permissi', tier: 's' },
+
+  // Interaction Analytics Roles and Permissions — SPECIFIC: Roles
+  { keys: ["interaction analytics roles", "speech analytics permissions"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/18773765929243-Interaction-Analytics-Roles-and-Permissions"],
+    category: 'support', group: 'interaction_analytics_roles_and_permissi', tier: 's' },
+
+  // Interaction Analytics Roles and Permissions — SPECIFIC: Redaction
+  { keys: ["speech redaction", "pii redaction", "transcript redaction"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/15589676704155-Interaction-Analytics-Redaction-Feature"],
+    category: 'support', group: 'interaction_analytics_roles_and_permissi', tier: 's' },
+
+  // Phone Numbers: Permissions — GENERIC (overview only)
+  { keys: ["phone numbers", "did numbers", "toll free", "number porting", "buy phone number", "porting"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/8769600080923-Phone-Number-Porting-Guide", "https://support.talkdesk.com/hc/en-us/articles/115000745083-SMS-FAQ"],
+    category: 'support', group: 'phone_numbers_permissions', tier: 'g' },
+
+  // Phone Numbers: Permissions — SPECIFIC: Toll-Free
+  { keys: ["toll free number", "800 number", "tollfree"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/27064679184539-Toll-Free-Numbers", "https://support.talkdesk.com/hc/en-us/articles/23399441161243-How-to-Register-a-Toll-Free-Number-for-SMS"],
+    category: 'support', group: 'phone_numbers_permissions', tier: 's' },
+
+  // Phone Numbers: Permissions — SPECIFIC: Porting
+  { keys: ["number porting", "port number", "port in"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/8769600080923-Phone-Number-Porting-Guide"],
+    category: 'support', group: 'phone_numbers_permissions', tier: 's' },
+
+  // Phone Numbers: Permissions — SPECIFIC: Permissions
+  { keys: ["number permissions", "phone number permissions"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/35723137301659-Phone-Numbers-Permissions"],
+    category: 'support', group: 'phone_numbers_permissions', tier: 's' },
+
+  // Phone Numbers: Permissions — SPECIFIC: Coverage
+  { keys: ["worldwide coverage", "international numbers", "country coverage"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/205454185-Phone-Numbers-Worldwide-Coverage"],
+    category: 'support', group: 'phone_numbers_permissions', tier: 's' },
+
+  // E911 for Telco Resellers — GENERIC (overview only)
+  { keys: ["talkdesk phone", "cloud pbx", "telephony", "sip phone", "desk phone", "phone"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360061164511-Talkdesk-Phone-Overview", "https://support.talkdesk.com/hc/en-us/articles/13239607704603-Talkdesk-Phone-SIP-Devices-Setup-Guide"],
+    category: 'support', group: 'e911_for_telco_resellers', tier: 'g' },
+
+  // E911 for Telco Resellers — SPECIFIC: SIP Devices
+  { keys: ["sip device setup", "sip devices configuration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/13239607704603-Talkdesk-Phone-SIP-Devices-Setup-Guide"],
+    category: 'support', group: 'e911_for_telco_resellers', tier: 's' },
+
+  // E911 for Telco Resellers — SPECIFIC: Phone Home
+  { keys: ["talkdesk phone home", "phone home"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4407215661851-Talkdesk-Phone-Home"],
+    category: 'support', group: 'e911_for_telco_resellers', tier: 's' },
+
+  // E911 for Telco Resellers — SPECIFIC: E911 for Telco
+  { keys: ["e911 telco", "telco reseller"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/17131039629595-E911-for-Telco-Resellers"],
+    category: 'support', group: 'e911_for_telco_resellers', tier: 's' },
+
+  // Talkdesk Identity: Overview — GENERIC (overview only)
+  { keys: ["identity", "voice authentication", "voice biometric", "caller authentication", "voice verify", "biometric"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360062410131-Talkdesk-Identity-Overview", "https://support.talkdesk.com/hc/en-us/articles/4408671713691-Phone-Validation-Overview", "https://support.talkdesk.com/hc/en-us/articles/6810476167963-Spoofing-Detection-Overview", "https://support.talkdesk.com/hc/en-us/articles/9118874190363-Voice-Authentication-Overview", "https://support.talkdesk.com/hc/en-us/articles/4577355238171-Identity-Tab-in-Conversations-App-Overview", "https://support.talkdesk.com/hc/en-us/articles/13180374147611-Identity-FAQ", "https://support.talkdesk.com/hc/en-us/articles/9541117123227-Voice-Authentication-FAQ", "https://support.talkdesk.com/hc/en-us/articles/9540535789595-Voice-Authentication-Compliance-FAQ", "https://support.talkdesk.com/hc/en-us/articles/9508112085019-Voice-Authentication-Consent-FAQ", "https://support.talkdesk.com/hc/en-us/articles/9534618801307-Voice-Authentication-Contact-ID-FAQ", "https://support.talkdesk.com/hc/en-us/articles/9260004933531-Voice-Authentication-Voiceprint-FAQ", "https://support.talkdesk.com/hc/en-us/articles/9258600813595-Phone-Validation-FAQ", "https://support.talkdesk.com/hc/en-us/articles/4402543132315-Spoofing-Detection-FAQ"],
+    category: 'support', group: 'talkdesk_identity_overview', tier: 'g' },
+
+  // Talkdesk Identity: Overview — SPECIFIC: Phone Validation
+  { keys: ["phone validation", "number validation"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4408671713691-Phone-Validation-Overview", "https://support.talkdesk.com/hc/en-us/articles/7174777518875-Configuring-Phone-Validation-in-Studio", "https://support.talkdesk.com/hc/en-us/articles/9258600813595-Phone-Validation-FAQ"],
+    category: 'support', group: 'talkdesk_identity_overview', tier: 's' },
+
+  // Talkdesk Identity: Overview — SPECIFIC: Spoofing
+  { keys: ["spoofing detection", "caller spoofing", "deepfake"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/6810476167963-Spoofing-Detection-Overview", "https://support.talkdesk.com/hc/en-us/articles/4402543132315-Spoofing-Detection-FAQ"],
+    category: 'support', group: 'talkdesk_identity_overview', tier: 's' },
+
+  // Getting Started with Talkdesk Operations Center (formerly AI Trainer) — GENERIC (overview only)
+  { keys: ["ai trainer", "operations center", "cxa operations", "intent training", "nlp training"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4402552489613-Getting-Started-with-Talkdesk-Operations-Center-formerly-AI-Trainer", "https://support.talkdesk.com/hc/en-us/articles/7255045143451-Talkdesk-CXA-Operations-Center-formerly-AI-Trainer-FAQ-Overview", "https://support.talkdesk.com/hc/en-us/articles/8371776409243-Talkdesk-CXA-Operations-Center-formerly-AI-Trainer-FAQ-Intent-Models", "https://support.talkdesk.com/hc/en-us/articles/36216252941595--Preview-AI-Guardrails-Overview"],
+    category: 'support', group: 'getting_started_with_talkdesk_operations', tier: 'g' },
+
+  // Getting Started with Talkdesk Operations Center (formerly AI Trainer) — SPECIFIC: Intent Detection
+  { keys: ["intent model training", "train intent"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4406172628635-Training-Intent-Detection-Models-in-Talkdesk-CXA-Operations-Center-formerly-AI-Trainer"],
+    category: 'support', group: 'getting_started_with_talkdesk_operations', tier: 's' },
+
+  // Getting Started with Talkdesk Operations Center (formerly AI Trainer) — SPECIFIC: Speech-to-Text
+  { keys: ["speech to text model", "stt model", "custom stt"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4406577904923-Training-Speech-to-Text-Models-in-Talkdesk-CXA-Operations-Center-formerly-AI-Trainer"],
+    category: 'support', group: 'getting_started_with_talkdesk_operations', tier: 's' },
+
+  // Getting Started with Talkdesk Operations Center (formerly AI Trainer) — SPECIFIC: Best Practices
+  { keys: ["best practices intent", "intent best practices"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/14935062309915-Best-Practices-for-Intents-Training"],
+    category: 'support', group: 'getting_started_with_talkdesk_operations', tier: 's' },
+
+  // ── APPCONNECT MARKETPLACE — sourced from appconnect.talkdesk.com ──
+
+  // AppConnect — General / Marketplace overview
+  { keys: ["appconnect", "app marketplace", "install app", "third party app", "talkdesk marketplace", "partner app", "app store", "app directory", "marketplace", "integrations marketplace"],
+    urls: [
+      "https://appconnect.talkdesk.com/",
+      "https://support.talkdesk.com/hc/en-us/articles/360001418812-AppConnect-Install-Guide-for-Custom-Contracts"
+    ],
+    category: 'appconnect', group: 'ac_general', tier: 'g' },
+
+  // WFM apps on AppConnect
+  { keys: ["calabrio wfm", "calabrio workforce management", "verint wfm", "verint workforce management", "communitywfm", "community wfm", "peopleware wfm", "ttec wfm", "wfm adapter", "third party wfm", "wfm integration appconnect"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/calabrio-wfm",
+      "https://appconnect.talkdesk.com/apps/verint-workforce-management",
+      "https://appconnect.talkdesk.com/apps/communitywfm",
+      "https://appconnect.talkdesk.com/apps/Peopleware",
+      "https://appconnect.talkdesk.com/apps/wfm-adapter-by-ttec-digital"
+    ],
+    category: 'appconnect', group: 'ac_wfm', tier: 'g' },
+
+  // QM / Quality Management apps on AppConnect
+  { keys: ["calabrio qm", "calabrio quality management", "scorebuddy", "envision workforce optimization", "successKPI", "success kpi", "quality management app", "qm appconnect", "third party qm"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/calabrio-quality-management-qm",
+      "https://appconnect.talkdesk.com/apps/scorebuddy-all-in-one-staff-quality-assessment",
+      "https://appconnect.talkdesk.com/apps/envision-workforce-optimization-75b93dd6-2f1c-4386-9028-ae30f13c799f",
+      "https://appconnect.talkdesk.com/apps/successkpi"
+    ],
+    category: 'appconnect', group: 'ac_qm', tier: 'g' },
+
+  // Analytics / Speech Analytics apps on AppConnect
+  { keys: ["tethr", "calabrio analytics", "meilo", "level ai", "tinosys", "ibenchmark", "speech analytics app", "conversation intelligence app", "interaction analytics appconnect", "analytics appconnect"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/tethr",
+      "https://appconnect.talkdesk.com/apps/calabrio-analytics",
+      "https://appconnect.talkdesk.com/apps/meilo",
+      "https://appconnect.talkdesk.com/apps/level-ai",
+      "https://appconnect.talkdesk.com/apps/successkpi"
+    ],
+    category: 'appconnect', group: 'ac_analytics', tier: 'g' },
+
+  // Gamification / Coaching apps on AppConnect
+  { keys: ["hoopla", "motivarnos", "tap my back", "balto", "balto real time guidance", "gamification app", "agent coaching app", "performance management app", "compas coaching"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/hoopla",
+      "https://appconnect.talkdesk.com/apps/motivarnos",
+      "https://appconnect.talkdesk.com/apps/tap-my-back",
+      "https://appconnect.talkdesk.com/apps/balto-real-time-guidance",
+      "https://appconnect.talkdesk.com/apps/compas"
+    ],
+    category: 'appconnect', group: 'ac_gamification', tier: 'g' },
+
+  // Knowledge Base apps on AppConnect
+  { keys: ["procedureflow", "zingtree", "c2perform", "c2perform knowledgebase", "knowledge base app", "agent scripting app", "knowledge management appconnect"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/procedureflow",
+      "https://appconnect.talkdesk.com/apps/zingtree-agent-pro",
+      "https://appconnect.talkdesk.com/apps/c2perform-knowledgebase"
+    ],
+    category: 'appconnect', group: 'ac_kb', tier: 'g' },
+
+  // Virtual Agent / Conversational AI apps on AppConnect
+  { keys: ["omilia", "pypestream", "replicant", "smartaction", "teneo", "kindly", "atomchat", "virtual agent app", "conversational ai app", "chatbot appconnect", "ivr ai appconnect"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/omilia-conversational-voice",
+      "https://appconnect.talkdesk.com/apps/pypestream",
+      "https://appconnect.talkdesk.com/apps/replicant-voice",
+      "https://appconnect.talkdesk.com/apps/ai-powered-virtual-agents-for-voice",
+      "https://appconnect.talkdesk.com/apps/kindly"
+    ],
+    category: 'appconnect', group: 'ac_virtualagent', tier: 'g' },
+
+  // Digital / Messaging apps on AppConnect
+  { keys: ["avochato", "textline", "sms magic", "snapsolv", "sentiment.io", "sentiment io", "digital channel app", "messaging app appconnect", "sms app appconnect", "whatsapp appconnect", "omnichannel app"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/avochato",
+      "https://appconnect.talkdesk.com/apps/textline",
+      "https://appconnect.talkdesk.com/apps/sms-magic",
+      "https://appconnect.talkdesk.com/apps/snapsolv",
+      "https://appconnect.talkdesk.com/apps/sentiment-io-omnichannel"
+    ],
+    category: 'appconnect', group: 'ac_digital', tier: 'g' },
+
+  // Cobrowse / Video apps on AppConnect
+  { keys: ["egain cobrowse", "egain", "auvious", "auvious video", "cobrowse app", "video call app", "screen share app appconnect", "co-browse appconnect"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/egain-cobrowse",
+      "https://appconnect.talkdesk.com/apps/auvious-video"
+    ],
+    category: 'appconnect', group: 'ac_cobrowse', tier: 'g' },
+
+  // Outbound / Dialer apps on AppConnect
+  { keys: ["autoreach", "autoreach campaign management", "slybroadcast", "inform branded caller id", "tns branded calling", "outbound dialer app", "power dialer app", "branded caller id app", "ringless voicemail app"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/autoreach",
+      "https://appconnect.talkdesk.com/apps/autoreach-campaign-management",
+      "https://appconnect.talkdesk.com/apps/slybroadcast",
+      "https://appconnect.talkdesk.com/apps/inform-branded-caller-id",
+      "https://appconnect.talkdesk.com/apps/tns-enterprise-branded-calling"
+    ],
+    category: 'appconnect', group: 'ac_outbound', tier: 'g' },
+
+  // Security / PCI / Compliance apps on AppConnect
+  { keys: ["paytia", "validsoft", "nuclei compliance", "dasceq", "pci app", "payment app", "secure payment app", "voice biometrics app", "deepfake detection app", "compliance recording app"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/paytia-secure-virtual-terminal",
+      "https://appconnect.talkdesk.com/apps/validsoft-voice-verity",
+      "https://appconnect.talkdesk.com/apps/nuclei",
+      "https://appconnect.talkdesk.com/apps/authority-center"
+    ],
+    category: 'appconnect', group: 'ac_security', tier: 'g' },
+
+  // Headsets / Hardware apps on AppConnect
+  { keys: ["jabra", "jabra headset", "headset app", "hardware appconnect", "headset integration"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/jabra"
+    ],
+    category: 'appconnect', group: 'ac_hardware', tier: 'g' },
+
+  // Voice Recording / IVR Prompts services on AppConnect
+  { keys: ["snap recordings", "digital base voice", "trans-eastern", "trans eastern", "professional voice recording", "ivr prompts service", "voice over service", "on hold recording", "professional recording service"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/snap-recordings",
+      "https://appconnect.talkdesk.com/apps/digital-base-voice-overs",
+      "https://appconnect.talkdesk.com/apps/trans-eastern-voice-solutions"
+    ],
+    category: 'appconnect', group: 'ac_voiceover', tier: 'g' },
+
+  // Talkdesk Native Apps on AppConnect
+  { keys: ["talkdesk phone", "talkdesk xconnect", "xconnect", "sip trunk appconnect", "talkdesk identity appconnect", "proactive outbound engagement app", "talkdesk wfm app", "talkdesk copilot app", "resemble ai", "customer experience analytics app"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/talkdesk-phone",
+      "https://appconnect.talkdesk.com/apps/talkdesk-xconnect",
+      "https://appconnect.talkdesk.com/apps/talkdesk-identity",
+      "https://appconnect.talkdesk.com/apps/proactive-outbound-engagement",
+      "https://appconnect.talkdesk.com/apps/talkdesk-workforce-management",
+      "https://appconnect.talkdesk.com/apps/agent-assistance",
+      "https://appconnect.talkdesk.com/apps/customer-experience-analytics"
+    ],
+    category: 'appconnect', group: 'ac_native', tier: 'g' },
+
+  // Migration / Testing services on AppConnect
+  { keys: ["occam", "ets testing", "experience testing", "migration app", "contact center testing", "ccaas migration app", "implementation appconnect"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/ets-experience-testing-system"
+    ],
+    category: 'appconnect', group: 'ac_migration', tier: 'g' },
+
+  // CRM apps on AppConnect
+  { keys: ["kustomer", "kustomer crm", "crm app appconnect", "helpdesk app appconnect", "forethought", "forethought assist"],
+    urls: [
+      "https://appconnect.talkdesk.com/apps/kustomer-9967a557-c4a9-4b3f-880c-12159ac23d6e",
+      "https://appconnect.talkdesk.com/apps/forethought-assist"
+    ],
+    category: 'appconnect', group: 'ac_crm', tier: 'g' },
+
+  // Using Salesforce Unified Routing with T4SCV — GENERIC (overview only)
+  { keys: ["service cloud voice", "scv", "salesforce service cloud voice", "t4scv"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/45707676907419-Using-Salesforce-Unified-Routing-with-T4SCV"],
+    category: 'integrations', group: 'using_salesforce_unified_routing_with_t4', tier: 'g' },
+
+  // Using Salesforce Unified Routing with T4SCV — SPECIFIC: Unified Routing
+  { keys: ["salesforce unified routing", "t4scv routing"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/45707676907419-Using-Salesforce-Unified-Routing-with-T4SCV"],
+    category: 'integrations', group: 'using_salesforce_unified_routing_with_t4', tier: 's' },
+
+  // Using Salesforce Unified Routing with T4SCV — SPECIFIC: Einstein
+  { keys: ["einstein next best action"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/30145146912539-Leverage-SF-Einstein-Next-Best-Action-with-T4SCV-Transcriptions"],
+    category: 'integrations', group: 'using_salesforce_unified_routing_with_t4', tier: 's' },
+
+  // Talkdesk Connections — GENERIC (overview only)
+  { keys: ["connections", "talkdesk connections", "workflow automation", "builder automations"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4403618066715-Talkdesk-Connections"],
+    category: 'support', group: 'talkdesk_connections', tier: 'g' },
+
+  // Talkdesk Connections — SPECIFIC: Connection
+  { keys: ["create connection", "configure connection"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4403618066715-Talkdesk-Connections", "https://support.talkdesk.com/hc/en-us/articles/4406043747355-Creating-an-Automation-with-Talkdesk-Connections", "https://support.talkdesk.com/hc/en-us/articles/4406043660955-Creating-an-Action-with-Talkdesk-Connections", "https://support.talkdesk.com/hc/en-us/articles/4406043574427-Creating-a-Connection-with-Talkdesk-Connections"],
+    category: 'support', group: 'talkdesk_connections', tier: 's' },
+
+  // Talkdesk Connections — SPECIFIC: Action
+  { keys: ["create action", "configure action"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4406043660955-Creating-an-Action-with-Talkdesk-Connections"],
+    category: 'support', group: 'talkdesk_connections', tier: 's' },
+
+  // Talkdesk Connections — SPECIFIC: Automation
+  { keys: ["create automation", "configure automation"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4406043747355-Creating-an-Automation-with-Talkdesk-Connections"],
+    category: 'support', group: 'talkdesk_connections', tier: 's' },
+
+  // Autopilot Agentic: Voice Settings — GENERIC (overview only)
+  { keys: ["autopilot", "virtual agent", "voicebot", "chatbot", "conversational ai", "self service bot", "ai bot"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/10446114474395-Autopilot-Overview-Tab", "https://support.talkdesk.com/hc/en-us/articles/39696186925595-Autopilot-Agentic-Overview", "https://support.talkdesk.com/hc/en-us/articles/10440836447899-Automation-Designer-Overview", "https://support.talkdesk.com/hc/en-us/articles/13879281143835-Autopilot-FAQ", "https://support.talkdesk.com/hc/en-us/articles/4405087529883-Autopilot-Voice-Overview", "https://support.talkdesk.com/hc/en-us/articles/4411552638619-Autopilot-Digital-Overview"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 'g' },
+
+  // Autopilot Agentic: Voice Settings — SPECIFIC: Agentic
+  { keys: ["autopilot agentic", "agentic autopilot", "ai agentic"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/47741385977499-Autopilot-Agentic-Voice-Settings", "https://support.talkdesk.com/hc/en-us/articles/39696186925595-Autopilot-Agentic-Overview", "https://support.talkdesk.com/hc/en-us/articles/40273031755675-Creating-an-Autopilot-Agentic-in-AI-Launchpad"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 's' },
+
+  // Autopilot Agentic: Voice Settings — SPECIFIC: Barge-in
+  { keys: ["autopilot barge in", "barge in"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/11382650167963-Autopilot-Barge-in"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 's' },
+
+  // Autopilot Agentic: Voice Settings — SPECIFIC: Session Monitor
+  { keys: ["autopilot session monitor", "session monitor"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4530943436187-Autopilot-Session-Monitor"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 's' },
+
+  // Autopilot Agentic: Voice Settings — SPECIFIC: Bring Your Own Bot
+  { keys: ["autopilot byob", "bring your own bot"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/34031933617435-Autopilot-Bring-Your-Own-Bot-BYOB"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 's' },
+
+  // Autopilot Agentic: Voice Settings — SPECIFIC: Voice Settings
+  { keys: ["autopilot voice settings", "intent based"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/47741385977499-Autopilot-Agentic-Voice-Settings", "https://support.talkdesk.com/hc/en-us/articles/13815692690203-Autopilot-Voice-Settings-Intent-Based"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 's' },
+
+  // Autopilot Agentic: Voice Settings — SPECIFIC: Digital: Overview
+  { keys: ["autopilot digital"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4411552638619-Autopilot-Digital-Overview"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 's' },
+
+  // Autopilot Agentic: Voice Settings — SPECIFIC: Automation Designer
+  { keys: ["automation designer", "conversation flow builder"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/10440836447899-Automation-Designer-Overview", "https://support.talkdesk.com/hc/en-us/articles/16885940577179-Automation-Designer-Conversation-Markers-Conversational-Automations", "https://support.talkdesk.com/hc/en-us/articles/15358310799899-Automation-Designer-Quick-Reply-Digital-Component-Conversational-Automations", "https://support.talkdesk.com/hc/en-us/articles/10469462383643-Automation-Designer-Ask-Component", "https://support.talkdesk.com/hc/en-us/articles/11646156976923-Automation-Designer-Execute-Action-Component", "https://support.talkdesk.com/hc/en-us/articles/10465180356123-Automation-Designer-Escalation-Component", "https://support.talkdesk.com/hc/en-us/articles/10442501315483-Automation-Designer-Flow-Trigger-Component", "https://support.talkdesk.com/hc/en-us/articles/11228247470363-Automation-Designer-Function-Component", "https://support.talkdesk.com/hc/en-us/articles/12175696209947-Automation-Designer-Jump-Component", "https://support.talkdesk.com/hc/en-us/articles/10441456119579-Automation-Designer-Say-Component", "https://support.talkdesk.com/hc/en-us/articles/11196407940251-Automation-Designer-Split-Flow-Component", "https://support.talkdesk.com/hc/en-us/articles/15265147694235-Automation-Designer-Media-Digital-Component", "https://support.talkdesk.com/hc/en-us/articles/15258219164699-Automation-Designer-Button-Digital-Component", "https://support.talkdesk.com/hc/en-us/articles/15197113000859-Automation-Designer-Carousel-Digital-Component", "https://support.talkdesk.com/hc/en-us/articles/33452367146523--Preview-Automation-Designer-Knowledge-Management", "https://support.talkdesk.com/hc/en-us/articles/33452770946331--Preview-Automation-Designer-Search-Knowledge-Component", "https://support.talkdesk.com/hc/en-us/articles/13490010878107-Automation-Designer-Custom-and-System-Variables", "https://support.talkdesk.com/hc/en-us/articles/14897721491227-Automation-Designer-Simulator"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 's' },
+
+  // Autopilot Agentic: Voice Settings — SPECIFIC: FAQ
+  { keys: ["autopilot faq"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/13879281143835-Autopilot-FAQ"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 's' },
+
+  // Autopilot Agentic: Voice Settings — SPECIFIC: Sharing Data
+  { keys: ["autopilot studio", "sharing data studio"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/34328355703835-Autopilot-Sharing-Data-between-Studio-and-Autopilot"],
+    category: 'support', group: 'autopilot_agentic_voice_settings', tier: 's' },
+
+  // What is Talkdesk Agent Workspace? — GENERIC (overview only)
+  { keys: ["agent workspace", "workspace", "conversations app", "agent interface", "talkdesk agent"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4407159923227-What-is-Talkdesk-Agent-Workspace", "https://support.talkdesk.com/hc/en-us/articles/6628805817115-Upgrading-to-Talkdesk-Workspace-FAQ", "https://support.talkdesk.com/hc/en-us/articles/4407169235739-Conversations-Voice-Channel-Overview", "https://support.talkdesk.com/hc/en-us/articles/8344986700315-Conversations-Voice-Channel-Features-Guide"],
+    category: 'support', group: 'what_is_talkdesk_agent_workspace', tier: 'g' },
+
+  // What is Talkdesk Agent Workspace? — SPECIFIC: Contacts
+  { keys: ["contacts app", "contact management agent"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4407216863515-Contacts"],
+    category: 'support', group: 'what_is_talkdesk_agent_workspace', tier: 's' },
+
+  // What is Talkdesk Agent Workspace? — SPECIFIC: Activities
+  { keys: ["activities app", "call history agent"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4407199186843-Activities"],
+    category: 'support', group: 'what_is_talkdesk_agent_workspace', tier: 's' },
+
+  // What is Talkdesk Agent Workspace? — SPECIFIC: Voicemails
+  { keys: ["voicemails app", "voicemail agent"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4407200246043-Voicemails"],
+    category: 'support', group: 'what_is_talkdesk_agent_workspace', tier: 's' },
+
+  // What is Talkdesk Agent Workspace? — SPECIFIC: Customization
+  { keys: ["workspace customization", "agent customize"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/24261088110619-Agent-Workspace-Customization"],
+    category: 'support', group: 'what_is_talkdesk_agent_workspace', tier: 's' },
+
+  // Performance Management: Overview — GENERIC (overview only)
+  { keys: ["performance management", "gamification", "agent performance", "leaderboard"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4407628119451-Performance-Management-Overview", "https://support.talkdesk.com/hc/en-us/articles/4408022180763--Performance-Management-FAQ", "https://support.talkdesk.com/hc/en-us/articles/7140665343899-Performance-Management-Reports-Guide"],
+    category: 'support', group: 'performance_management_overview', tier: 'g' },
+
+  // Talkdesk Feedback: Overview — GENERIC (overview only)
+  { keys: ["feedback", "csat", "customer satisfaction", "survey", "nps"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4407839874587-Talkdesk-Feedback-Overview"],
+    category: 'support', group: 'talkdesk_feedback_overview', tier: 'g' },
+
+  // Talkdesk Feedback: Overview — SPECIFIC: IVR Survey
+  { keys: ["ivr survey", "ivr feedback"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4411041346459-Talkdesk-Feedback-Setting-up-an-IVR-Survey"],
+    category: 'support', group: 'talkdesk_feedback_overview', tier: 's' },
+
+  // Talkdesk Feedback: Overview — SPECIFIC: SMS Survey
+  { keys: ["sms survey", "sms feedback"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/7865499246491-Talkdesk-Feedback-Setting-up-an-SMS-Survey", "https://support.talkdesk.com/hc/en-us/articles/8889389020443-Talkdesk-Feedback-SMS-Survey-Supported-Countries"],
+    category: 'support', group: 'talkdesk_feedback_overview', tier: 's' },
+
+  // Talkdesk Feedback: Overview — SPECIFIC: Web Survey
+  { keys: ["web survey", "digital survey"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/45887902743579-Talkdesk-Feedback-Setting-up-a-Web-Survey"],
+    category: 'support', group: 'talkdesk_feedback_overview', tier: 's' },
+
+  // Talkdesk Healthcare Experience Cloud: Configuring HEC for EHR Integration Settings — GENERIC (overview only)
+  { keys: ["healthcare", "ehr", "epic", "patient", "healthcare cloud", "hipaa healthcare"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/10750794827035-Automated-Notifications-Overview", "https://support.talkdesk.com/hc/en-us/articles/4410654872219-Epic-Integration-Overview", "https://support.talkdesk.com/hc/en-us/articles/4408616300571-Healthcare-Experience-Cloud-for-Providers-Overview", "https://support.talkdesk.com/hc/en-us/articles/4410654687899-Providers-Workspace-Overview"],
+    category: 'support', group: 'talkdesk_healthcare_experience_cloud_con', tier: 'g' },
+
+  // Talkdesk Healthcare Experience Cloud: Configuring HEC for EHR Integration Settings — SPECIFIC: Autopilot Solution
+  { keys: ["healthcare autopilot", "patient self service"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/22871751137179-Talkdesk-Healthcare-Experience-Cloud-Autopilot-Solution"],
+    category: 'support', group: 'talkdesk_healthcare_experience_cloud_con', tier: 's' },
+
+  // Talkdesk Healthcare Experience Cloud: Configuring HEC for EHR Integration Settings — SPECIFIC: EHR Integration
+  { keys: ["ehr integration", "epic integration", "ehr settings"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/40282153365019-Talkdesk-Healthcare-Experience-Cloud-Configuring-HEC-for-EHR-Integration-Settings", "https://support.talkdesk.com/hc/en-us/articles/40204940636059-Talkdesk-Healthcare-Experience-Cloud-EHR-Integration-Settings-Configuration"],
+    category: 'support', group: 'talkdesk_healthcare_experience_cloud_con', tier: 's' },
+
+  // Talkdesk Healthcare Experience Cloud: Configuring HEC for EHR Integration Settings — SPECIFIC: Automated Notifications
+  { keys: ["automated notifications healthcare", "appointment reminder"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/10750794827035-Automated-Notifications-Overview", "https://support.talkdesk.com/hc/en-us/articles/13815895605915-Sending-Automated-Notifications-via-Studio-API-flow"],
+    category: 'support', group: 'talkdesk_healthcare_experience_cloud_con', tier: 's' },
+
+  // Automating tasks in Zingtree Integration — GENERIC (overview only)
+  { keys: ["zingtree", "zingtree integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4409867740699-Automating-tasks-in-Zingtree-Integration"],
+    category: 'integrations', group: 'automating_tasks_in_zingtree_integration', tier: 'g' },
+
+  // Financial Services Experience Cloud for Banking: Overview — GENERIC (overview only)
+  { keys: ["financial services", "banking", "banking workspace", "finserv"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4412814774683-Financial-Services-Experience-Cloud-for-Banking-Overview"],
+    category: 'support', group: 'financial_services_experience_cloud_for_', tier: 'g' },
+
+  // Financial Services Experience Cloud for Banking: Overview — SPECIFIC: Banking Connector
+  { keys: ["banking connector", "core banking"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4413494302107-Banking-Connector"],
+    category: 'support', group: 'financial_services_experience_cloud_for_', tier: 's' },
+
+  // Using Zoom Connector — GENERIC (overview only)
+  { keys: ["zoom", "zoom connector"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4414430313499-Using-Zoom-Connector"],
+    category: 'integrations', group: 'using_zoom_connector', tier: 'g' },
+
+  // Talkdesk Digital Engagement: Overview — GENERIC (overview only)
+  { keys: ["digital engagement", "digital channels", "omnichannel", "chat", "whatsapp", "chat channel", "digital routing"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4453692379163-Talkdesk-Digital-Engagement-Overview", "https://support.talkdesk.com/hc/en-us/articles/4416787592731-Talkdesk-Digital-Engagement-FAQ"],
+    category: 'support', group: 'talkdesk_digital_engagement_overview', tier: 'g' },
+
+  // Talkdesk Digital Engagement: Overview — SPECIFIC: WhatsApp
+  { keys: ["whatsapp", "whatsapp channel"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/22490572434459-Talkdesk-Digital-Engagement-WhatsApp-Business-Onboarding-Process"],
+    category: 'support', group: 'talkdesk_digital_engagement_overview', tier: 's' },
+
+  // Talkdesk Digital Engagement: Overview — SPECIFIC: SMS
+  { keys: ["sms channel", "sms digital"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4410742762267-Talkdesk-Digital-Engagement-SMS-Channel-for-Agents", "https://support.talkdesk.com/hc/en-us/articles/5669578007579-Talkdesk-Digital-Engagement-SMS-Channel-for-Administrators"],
+    category: 'support', group: 'talkdesk_digital_engagement_overview', tier: 's' },
+
+  // Talkdesk Digital Engagement: Overview — SPECIFIC: Email
+  { keys: ["email channel", "email digital"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4416498835483-Talkdesk-Digital-Engagement-Email-Channel-for-Agents", "https://support.talkdesk.com/hc/en-us/articles/4416933732251-Talkdesk-Digital-Engagement-Email-Channel-for-Administrators", "https://support.talkdesk.com/hc/en-us/articles/36472246344603-Talkdesk-Digital-Engagement-Connecting-and-Authentication-Email-Channel"],
+    category: 'support', group: 'talkdesk_digital_engagement_overview', tier: 's' },
+
+  // Talkdesk Digital Engagement: Overview — SPECIFIC: Chat
+  { keys: ["live chat channel", "chat widget"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4416782978715-Talkdesk-Digital-Engagement-Chat-Channel-for-Agents", "https://support.talkdesk.com/hc/en-us/articles/4417729464731-Talkdesk-Digital-Engagement-Chat-Channel-for-Administrators", "https://support.talkdesk.com/hc/en-us/articles/4418031478299-Talkdesk-Digital-Engagement-Chat-Widget-for-Administrators", "https://support.talkdesk.com/hc/en-us/articles/28111739504667-Talkdesk-Digital-Engagement-Migrating-EU-Chat-Touchpoints"],
+    category: 'support', group: 'talkdesk_digital_engagement_overview', tier: 's' },
+
+  // Talkdesk Digital Engagement: Overview — SPECIFIC: Supervisor
+  { keys: ["digital reporting", "digital metrics"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/15289427792027-Talkdesk-Digital-Engagement-Cross-Channel-Features-for-Supervisors"],
+    category: 'support', group: 'talkdesk_digital_engagement_overview', tier: 's' },
+
+  // Talkdesk Digital Engagement: Overview — SPECIFIC: Cross-Channel
+  { keys: ["digital routing rules", "digital queue"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/8036397552027-Talkdesk-Digital-Engagement-Cross-Channel-Features-for-Administrators", "https://support.talkdesk.com/hc/en-us/articles/15289427792027-Talkdesk-Digital-Engagement-Cross-Channel-Features-for-Supervisors", "https://support.talkdesk.com/hc/en-us/articles/8712623489307-Talkdesk-Digital-Engagement-Cross-Channel-Features-for-Agents"],
+    category: 'support', group: 'talkdesk_digital_engagement_overview', tier: 's' },
+
+  // Creating Custom Reports in Talkdesk Explore — GENERIC (overview only)
+  { keys: ["cases", "talkdesk cases", "case management", "ticketing"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/5346045641627-Talkdesk-Cases-Overview", "https://support.talkdesk.com/hc/en-us/articles/7010736916251-Event-based-Automation-Overview", "https://support.talkdesk.com/hc/en-us/articles/5216244824219-Service-Level-Agreement-Overview", "https://support.talkdesk.com/hc/en-us/articles/5292170124571-Time-based-Automation-Overview"],
+    category: 'support', group: 'creating_custom_reports_in_talkdesk_expl', tier: 'g' },
+
+  // Creating Custom Reports in Talkdesk Explore — SPECIFIC: Email
+  { keys: ["cases email", "email to case"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/18118946746267-Creating-Connecting-or-Auto-Reopening-Cases-from-Email-Conversations"],
+    category: 'support', group: 'creating_custom_reports_in_talkdesk_expl', tier: 's' },
+
+  // Creating Custom Reports in Talkdesk Explore — SPECIFIC: Chat
+  { keys: ["cases chat", "chat to case"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/17577802734235-Creating-or-Connecting-Cases-from-Chat-Conversations"],
+    category: 'support', group: 'creating_custom_reports_in_talkdesk_expl', tier: 's' },
+
+  // Creating Custom Reports in Talkdesk Explore — SPECIFIC: Voice
+  { keys: ["cases voice", "voice to case"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/18118922847515-Creating-or-Connecting-Cases-from-Voice-conversations"],
+    category: 'support', group: 'creating_custom_reports_in_talkdesk_expl', tier: 's' },
+
+  // Creating Custom Reports in Talkdesk Explore — SPECIFIC: SLA
+  { keys: ["cases sla", "case sla"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/5293892861723-Case-SLA-Dashboard"],
+    category: 'support', group: 'creating_custom_reports_in_talkdesk_expl', tier: 's' },
+
+  // Setting up Talkdesk Dialer for Salesforce — GENERIC (overview only)
+  { keys: ["dialer for salesforce", "salesforce dialer", "sfdc dialer"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360042369171-Setting-up-Talkdesk-Dialer-for-Salesforce"],
+    category: 'integrations', group: 'setting_up_talkdesk_dialer_for_salesforc', tier: 'g' },
+
+  // Setting up Talkdesk Dialer for Salesforce — SPECIFIC: Lists
+  { keys: ["salesforce dialer lists", "dialer list salesforce"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4412207997339-How-to-use-Salesforce-Dialer-Lists", "https://support.talkdesk.com/hc/en-us/articles/6926009180699-Adding-and-Removing-Members-from-Dialer-Lists-Dynamically"],
+    category: 'integrations', group: 'setting_up_talkdesk_dialer_for_salesforc', tier: 's' },
+
+  // Setting up Talkdesk Dialer for Salesforce — SPECIFIC: Custom Objects
+  { keys: ["salesforce custom objects dialer"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/6220958691483-Using-Talkdesk-Dialer-for-Salesforce-with-Custom-Objects"],
+    category: 'integrations', group: 'setting_up_talkdesk_dialer_for_salesforc', tier: 's' },
+
+  // Talkdesk CX Sensors: Overview — GENERIC (overview only)
+  { keys: ["cx sensors", "keyword monitoring", "alert triggers"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/6216737453467-Talkdesk-CX-Sensors-Overview"],
+    category: 'support', group: 'talkdesk_cx_sensors_overview', tier: 'g' },
+
+  // Talkdesk QM Assist: Overview — GENERIC (overview only)
+  { keys: ["qm assist", "ai evaluation", "automated scoring", "auto qa"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4402964008987-Talkdesk-QM-Assist-Overview"],
+    category: 'support', group: 'talkdesk_qm_assist_overview', tier: 'g' },
+
+  // Talkdesk QM Assist: Overview — SPECIFIC: Configurations
+  { keys: ["qm assist setup", "qm assist configuration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/4405382004251-Configurations-in-QM-Assist"],
+    category: 'support', group: 'talkdesk_qm_assist_overview', tier: 's' },
+
+  // Talkdesk QM Assist: Overview — SPECIFIC: Rules
+  { keys: ["qm assist rules", "ai evaluation rules"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/42693306557467-How-to-Set-Up-Form-Specific-AI-Evaluation-Rules"],
+    category: 'support', group: 'talkdesk_qm_assist_overview', tier: 's' },
+
+  // Using Talkdesk Embedded in HubSpot — GENERIC (overview only)
+  { keys: ["hubspot", "hubspot connector", "hubspot integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/42238313611419-Using-Talkdesk-Embedded-in-HubSpot"],
+    category: 'integrations', group: 'using_talkdesk_embedded_in_hubspot', tier: 'g' },
+
+  // Using Talkdesk Embedded in HubSpot — SPECIFIC: Click-to-call
+  { keys: ["hubspot click to call"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/13518797405595-Using-Click-to-call-with-the-HubSpot-Connector"],
+    category: 'integrations', group: 'using_talkdesk_embedded_in_hubspot', tier: 's' },
+
+  // Using Talkdesk Embedded in HubSpot — SPECIFIC: Interaction Logging
+  { keys: ["hubspot automate", "hubspot logging", "hubspot interaction logging"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/7414968149275-Talkdesk-HubSpot-Connector-Interaction-Logging-and-Task-Automation"],
+    category: 'integrations', group: 'using_talkdesk_embedded_in_hubspot', tier: 's' },
+
+  // Talkdesk Studio: Overview — GENERIC (overview only)
+  { keys: ["studio", "flow designer", "routing designer", "call flow", "ivr flow", "routing", "flows", " flow "],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360018298032-Talkdesk-Studio-Overview", "https://support.talkdesk.com/hc/en-us/articles/45982749795995--Preview-Studio-Governance-Overview"],
+    category: 'studio', group: 'talkdesk_studio_overview', tier: 'g' },
+
+  // Talkdesk Builder Integrations: Overview — GENERIC (overview only)
+  { keys: ["talkdesk builder", "integration builder", "builder connections"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/7669875789339-Talkdesk-Builder-Integrations-Overview"],
+    category: 'support', group: 'talkdesk_builder_integrations_overview', tier: 'g' },
+
+  // Numbers — GENERIC (overview only)
+  { keys: ["admin", "talkdesk admin", "account settings", "administrator"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/30052438106907-Security-Settings-Overview", "https://support.talkdesk.com/hc/en-us/articles/7670620450075-Talkdesk-Admin-Overview", "https://support.talkdesk.com/hc/en-us/articles/360005026932--Preferences-Admin-Preferences-Overview"],
+    category: 'support', group: 'numbers', tier: 'g' },
+
+  // Numbers — SPECIFIC: Business Hours
+  { keys: ["business hours", "after hours", "holiday hours"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/202930825--Preferences-Configuring-Custom-Business-Hours", "https://support.talkdesk.com/hc/en-us/articles/207374083--Numbers-Customizing-the-Outside-Business-Hours-message-Legacy"],
+    category: 'support', group: 'numbers', tier: 's' },
+
+  // Numbers — SPECIFIC: Disposition
+  { keys: ["call dispositions", "disposition", "wrap up"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/205645679-Dispositions"],
+    category: 'support', group: 'numbers', tier: 's' },
+
+  // Numbers — SPECIFIC: Recording
+  { keys: ["call recording settings", "enable recording"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/26012053637147-Agent-to-Agent-Call-Recording", "https://support.talkdesk.com/hc/en-us/articles/202551769-Agent-initiated-Pause-and-Resume-Call-Recording", "https://support.talkdesk.com/hc/en-us/articles/210267373--Preferences-Call-Recording", "https://support.talkdesk.com/hc/en-us/articles/115002325846--Preferences-Dual-Channel-Recordings"],
+    category: 'support', group: 'numbers', tier: 's' },
+
+  // Numbers — SPECIFIC: Attributes
+  { keys: ["contact attributes", "attributes tab", "agent skills"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360053080911-Attributes"],
+    category: 'support', group: 'numbers', tier: 's' },
+
+  // Numbers — SPECIFIC: Numbers
+  { keys: ["numbers tab", "phone number management"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/38529085065499-Numbers", "https://support.talkdesk.com/hc/en-us/articles/36628612182811--Numbers-Dedicated-Line-Visual-Indicators-on-Numbers-Page-Legacy", "https://support.talkdesk.com/hc/en-us/articles/200503769--Numbers-Purchasing-Phone-Numbers", "https://support.talkdesk.com/hc/en-us/articles/207388056--Numbers-Configuring-a-Phone-Number", "https://support.talkdesk.com/hc/en-us/articles/203159049--Preferences-Creating-a-List-of-Favorite-External-Phone-Numbers", "https://support.talkdesk.com/hc/en-us/articles/203219845--Preferences-Compiling-a-Blocklist-of-Phone-Numbers", "https://support.talkdesk.com/hc/en-us/articles/206563223--Numbers-Phone-Number-Search-and-Filtering", "https://support.talkdesk.com/hc/en-us/articles/115003373863--Numbers-Alternative-to-Dedicated-Phone-Numbers-Legacy", "https://support.talkdesk.com/hc/en-us/articles/360049144791--Numbers-Ringing-Timeout", "https://support.talkdesk.com/hc/en-us/articles/37598976886683--Numbers-Phone-Numbers-Queue-Visibility-and-Filtering", "https://support.talkdesk.com/hc/en-us/articles/203599249--Numbers-Assigning-a-Talkdesk-Number-to-be-a-VIP-Phone-Number-Legacy", "https://support.talkdesk.com/hc/en-us/articles/202958019--Numbers-Dedicated-Phone-Numbers-Legacy", "https://support.talkdesk.com/hc/en-us/articles/200587599--Agents-Enabling-Extensions-on-Agents-and-Phone-Numbers-Legacy", "https://support.talkdesk.com/hc/en-us/articles/200567019--Numbers-Numbers-Custom-Settings-Legacy", "https://support.talkdesk.com/hc/en-us/articles/207374083--Numbers-Customizing-the-Outside-Business-Hours-message-Legacy", "https://support.talkdesk.com/hc/en-us/articles/206971156--Numbers-Greetings-and-Messages-Legacy"],
+    category: 'support', group: 'numbers', tier: 's' },
+
+  // Numbers — SPECIFIC: Keyboard
+  { keys: ["keyboard shortcuts"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/36979570882971-Keyboard-Shortcuts"],
+    category: 'support', group: 'numbers', tier: 's' },
+
+  // Automating tasks in Outreach integration — GENERIC (overview only)
+  { keys: ["outreach", "outreach io integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/9613971920539-Automating-tasks-in-Outreach-integration"],
+    category: 'integrations', group: 'automating_tasks_in_outreach_integration', tier: 'g' },
+
+  // Talkdesk Conversation Orchestrator: Overview — GENERIC (overview only)
+  { keys: ["conversation orchestrator", "audio streaming", "stream audio"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/8799990380571-Talkdesk-Conversation-Orchestrator-Overview", "https://support.talkdesk.com/hc/en-us/articles/8800365612315-Talkdesk-Conversation-Orchestrator-FAQ"],
+    category: 'support', group: 'talkdesk_conversation_orchestrator_overv', tier: 'g' },
+
+  // Talkdesk Conversation Orchestrator: Overview — SPECIFIC: Bidirectional
+  { keys: ["bidirectional audio", "two way streaming"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/9484798498587-Conversation-Orchestrator-Streaming-Bidirectional-Audio"],
+    category: 'support', group: 'talkdesk_conversation_orchestrator_overv', tier: 's' },
+
+  // Talkdesk Conversation Orchestrator: Overview — SPECIFIC: Unidirectional
+  { keys: ["unidirectional audio", "one way streaming"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/8826254684699-Conversation-Orchestrator-Streaming-Unidirectional-Audio"],
+    category: 'support', group: 'talkdesk_conversation_orchestrator_overv', tier: 's' },
+
+  // Talkdesk Workspace Designer: Overview — GENERIC (overview only)
+  { keys: ["workspace designer", "custom panel", "workspace widget"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/10383390284955-Talkdesk-Workspace-Designer-Overview"],
+    category: 'support', group: 'talkdesk_workspace_designer_overview', tier: 'g' },
+
+  // Workato integration Activation — GENERIC (overview only)
+  { keys: ["workato", "workato integration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/11333582100507-Workato-integration-Activation"],
+    category: 'integrations', group: 'workato_integration_activation', tier: 'g' },
+
+  // Talkdesk Phone Mobile App Overview — GENERIC (overview only)
+  { keys: ["phone mobile app", "talkdesk mobile", "mobile app"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/12175936162971-Talkdesk-Phone-Mobile-App-Overview"],
+    category: 'support', group: 'talkdesk_phone_mobile_app_overview', tier: 'g' },
+
+  // Talkdesk AI Launchpad: Overview — GENERIC (overview only)
+  { keys: ["ai launchpad", "launchpad", "ai configuration", "cx analytics", "cxa flow"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/11328325715099-Talkdesk-AI-Launchpad-Overview"],
+    category: 'support', group: 'talkdesk_ai_launchpad_overview', tier: 'g' },
+
+  // Talkdesk AI Launchpad: Overview — SPECIFIC: Languages
+  { keys: ["ai launchpad languages", "supported languages ai"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/14732294347547-AI-Supported-Languages"],
+    category: 'support', group: 'talkdesk_ai_launchpad_overview', tier: 's' },
+
+  // Talkdesk AI Launchpad: Overview — SPECIFIC: Types of AI Models
+  { keys: ["ai launchpad models", "ai model types"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/15482751145499-AI-Launchpad-Types-of-AI-Models"],
+    category: 'support', group: 'talkdesk_ai_launchpad_overview', tier: 's' },
+
+  // Activating the Microsoft Power Platform Integration — GENERIC (overview only)
+  { keys: ["power platform", "power automate", "microsoft power platform"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/12372793883035-Activating-the-Microsoft-Power-Platform-Integration"],
+    category: 'integrations', group: 'activating_the_microsoft_power_platform_', tier: 'g' },
+
+  // Talkdesk Office: Overview — GENERIC (overview only)
+  { keys: ["talkdesk office", "back office", "non agent license"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/12551456580123-Talkdesk-Office-Overview"],
+    category: 'support', group: 'talkdesk_office_overview', tier: 'g' },
+
+  // Talkdesk Embedded in Microsoft Teams — GENERIC (overview only)
+  { keys: ["microsoft teams", "teams connector", "ms teams"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/41063783448859-Talkdesk-Embedded-in-Microsoft-Teams"],
+    category: 'integrations', group: 'talkdesk_embedded_in_microsoft_teams', tier: 'g' },
+
+  // Talkdesk Embedded in Microsoft Teams — SPECIFIC: Presence
+  { keys: ["teams presence sync", "teams presence"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/31135450003611-Talkdesk-Microsoft-Teams-Presence-Synchronization"],
+    category: 'integrations', group: 'talkdesk_embedded_in_microsoft_teams', tier: 's' },
+
+  // Talkdesk Embedded in Microsoft Teams — SPECIFIC: Embedded
+  { keys: ["teams embedded"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/41063783448859-Talkdesk-Embedded-in-Microsoft-Teams"],
+    category: 'integrations', group: 'talkdesk_embedded_in_microsoft_teams', tier: 's' },
+
+  // Activating Talkdesk Oracle Service Cloud Connector — GENERIC (overview only)
+  { keys: ["oracle", "oracle service cloud"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/14652063034139-Activating-Talkdesk-Oracle-Service-Cloud-Connector"],
+    category: 'integrations', group: 'activating_talkdesk_oracle_service_cloud', tier: 'g' },
+
+  // Uploading Contacts with Contact Importer — GENERIC (overview only)
+  { keys: ["contact import", "bulk import contacts", "csv import contacts"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/200703929-Uploading-Contacts-with-Contact-Importer"],
+    category: 'support', group: 'uploading_contacts_with_contact_importer', tier: 'g' },
+
+  // Talkdesk Home — GENERIC (overview only)
+  { keys: ["talkdesk home", "home app", "home dashboard"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/22184560592539-Preparing-for-the-New-Home-Experience-FAQ"],
+    category: 'support', group: 'talkdesk_home', tier: 'g' },
+
+  // Self-service Usage Cost Reporting — GENERIC (overview only)
+  { keys: ["usage cost", "cost report", "billing report"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/16787224117275-Self-service-Usage-Cost-Reporting"],
+    category: 'support', group: 'self_service_usage_cost_reporting', tier: 'g' },
+
+  // Verint WFM Connector — GENERIC (overview only)
+  { keys: ["verint", "verint wfm", "verint connector"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/20629298248731-Talkdesk-Verint-WFM-Connector-FAQ"],
+    category: 'integrations', group: 'verint_wfm_connector', tier: 'g' },
+
+  // Talkdesk Advanced Dialer: Administrator and Supervisor Configuration Guide — GENERIC (overview only)
+  { keys: ["advanced dialer", "predictive dialer", "agentless dialer", "blended dialer", "predictive", "agentless dialer mode", "campaigns"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/44932074665499-Talkdesk-Advanced-Dialer-Administrator-and-Supervisor-Configuration-Guide", "https://support.talkdesk.com/hc/en-us/articles/24876859856155-Talkdesk-Advanced-Dialer-Overview"],
+    category: 'support', group: 'talkdesk_advanced_dialer_administrator_a', tier: 'g' },
+
+  // Talkdesk Advanced Dialer: Administrator and Supervisor Configuration Guide — SPECIFIC: Agentless
+  { keys: ["agentless campaign", "agentless dialer mode"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/44928772098203-Talkdesk-Advanced-Dialer-Agentless-Campaign-Configuration", "https://support.talkdesk.com/hc/en-us/articles/41640322190491-Talkdesk-Advanced-Dialer-Trigger-Flow-Management-for-Agentless-Voice-Campaign"],
+    category: 'support', group: 'talkdesk_advanced_dialer_administrator_a', tier: 's' },
+
+  // Talkdesk Advanced Dialer: Administrator and Supervisor Configuration Guide — SPECIFIC: Blending
+  { keys: ["blended agent", "agent blending"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/42743246993691-Agent-Based-Blending-for-Advanced-Dialer"],
+    category: 'support', group: 'talkdesk_advanced_dialer_administrator_a', tier: 's' },
+
+  // Talkdesk Retail Experience Cloud: Overview — GENERIC (overview only)
+  { keys: ["retail", "retail experience", "retail workspace", "retail cloud"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/24998057618075-Talkdesk-Retail-Experience-Cloud-Overview", "https://support.talkdesk.com/hc/en-us/articles/24998598130203-Talkdesk-Retail-Experience-Cloud-FAQ"],
+    category: 'support', group: 'talkdesk_retail_experience_cloud_overvie', tier: 'g' },
+
+  // Talkdesk Retail Experience Cloud: Overview — SPECIFIC: Service Directories
+  { keys: ["service directory", "retail service directory"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/24999576957339-Service-Directories"],
+    category: 'support', group: 'talkdesk_retail_experience_cloud_overvie', tier: 's' },
+
+  // Talkdesk Retail Experience Cloud: Overview — SPECIFIC: E-Commerce
+  { keys: ["ecommerce integration", "shopify workspace", "retail ecommerce"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/35558287120283-E-Commerce-Platform-Integrations"],
+    category: 'support', group: 'talkdesk_retail_experience_cloud_overvie', tier: 's' },
+
+  // Talkdesk Navigator: Overview — GENERIC (overview only)
+  { keys: ["navigator", "talkdesk navigator", "topic detection", "analyze message component"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/26265455750171-Talkdesk-Navigator-Overview"],
+    category: 'support', group: 'talkdesk_navigator_overview', tier: 'g' },
+
+  // Talkdesk Navigator: Overview — SPECIFIC: Dashboard
+  { keys: ["navigator dashboard", "navigator explore"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/35735180032411-Talkdesk-Navigator-Dashboard-for-Explore"],
+    category: 'support', group: 'talkdesk_navigator_overview', tier: 's' },
+
+  // Talkdesk Navigator: Overview — SPECIFIC: Attribute Detector
+  { keys: ["attribute detector", "navigator attribute"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/45447581544731-Talkdesk-Navigator-Attribute-Detector"],
+    category: 'support', group: 'talkdesk_navigator_overview', tier: 's' },
+
+  // Support Dashboard — GENERIC (overview only)
+  { keys: ["support dashboard", "partner support dashboard"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/32347063932571-Support-Dashboard-Overview", "https://support.talkdesk.com/hc/en-us/articles/32637496504219-Support-Dashboard-Billing-Overview"],
+    category: 'support', group: 'support_dashboard', tier: 'g' },
+
+  // Talkdesk Express: Overview — GENERIC (overview only)
+  { keys: ["talkdesk express", "express edition", "partner reseller", "express"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/33960142030107-Talkdesk-Express-Overview", "https://support.talkdesk.com/hc/en-us/articles/33963373429403-Talkdesk-Express-FAQs-Overview"],
+    category: 'support', group: 'talkdesk_express_overview', tier: 'g' },
+
+  // Talkdesk SAP C4C Connector: Integration Activation — GENERIC (overview only)
+  { keys: ["sap", "sap c4c", "sap cloud connector"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/34171163417115-Talkdesk-SAP-C4C-Connector-Integration-Activation"],
+    category: 'integrations', group: 'talkdesk_sap_c4c_connector_integration_a', tier: 'g' },
+
+  // How to Embed Talkdesk within your System — GENERIC (overview only)
+  { keys: ["embed talkdesk", "embedded talkdesk", "custom embed"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/35497801968667-How-to-Embed-Talkdesk-within-your-System"],
+    category: 'support', group: 'how_to_embed_talkdesk_within_your_system', tier: 'g' },
+
+  // Financial Services Experience Cloud for Insurance: Overview — GENERIC (overview only)
+  { keys: ["insurance", "insurance workspace", "financial services insurance"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/37683651826331-Financial-Services-Experience-Cloud-for-Insurance-Overview"],
+    category: 'support', group: 'financial_services_experience_cloud_for_', tier: 'g' },
+
+  // Talkdesk CXA for any contact center: Overview — GENERIC (overview only)
+  { keys: ["cxa any contact center", "byoc", "bring your own carrier"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/40996813369115-Talkdesk-CXA-for-any-contact-center-Overview", "https://support.talkdesk.com/hc/en-us/articles/40995448511259-Talkdesk-CXA-for-any-contact-center-FAQ"],
+    category: 'support', group: 'talkdesk_cxa_for_any_contact_center_over', tier: 'g' },
+
+  // Setting up Talkdesk: Requirements & Best Practices — GENERIC (overview only)
+  { keys: ["getting started", "setup talkdesk", "onboarding", "system requirements", "browser requirements", "inbound"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/204370859-Setting-up-Talkdesk-Requirements-Best-Practices"],
+    category: 'support', group: 'setting_up_talkdesk_requirements_best_pr', tier: 'g' },
+
+  // Setting up Talkdesk: Requirements & Best Practices — SPECIFIC: Headsets
+  { keys: ["headset recommendation", "recommended headset"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/205161253-Recommended-Headsets"],
+    category: 'support', group: 'setting_up_talkdesk_requirements_best_pr', tier: 's' },
+
+  // Setting up Talkdesk: Requirements & Best Practices — SPECIFIC: Browser
+  { keys: ["browser setup", "chrome setup", "edge setup"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/205057255-Setting-up-your-Browser-to-Work-with-Talkdesk", "https://support.talkdesk.com/hc/en-us/articles/208695256-Enabling-Desktop-Notifications-in-the-Browser"],
+    category: 'support', group: 'setting_up_talkdesk_requirements_best_pr', tier: 's' },
+
+  // Section 38579950825371 — no config, overview only
+  { keys: ["inviting", "your", "team"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/204370899-Inviting-your-Team"],
+    category: 'support', group: 'setting_up_talkdesk_requirements_best_pr', tier: 's' },
+
+  // AI Agent Platform: Overview — GENERIC (overview only)
+  { keys: ["ai agent platform", "agentic", "autonomous agent"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/39090087926939-AI-Agent-Platform-Overview"],
+    category: 'support', group: 'ai_agent_platform_overview', tier: 'g' },
+
+  // Talkdesk Utilities Experience Cloud: Overview — GENERIC (overview only)
+  { keys: ["utilities", "utilities cloud", "utility company"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/39584396567963-Talkdesk-Utilities-Experience-Cloud-Overview"],
+    category: 'support', group: 'talkdesk_utilities_experience_cloud_over', tier: 'g' },
+
+  // Talkdesk Hospitality Experience Cloud: Overview — GENERIC (overview only)
+  { keys: ["hospitality", "hotel", "hospitality cloud"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/39593990236699-Talkdesk-Hospitality-Experience-Cloud-Overview"],
+    category: 'support', group: 'talkdesk_hospitality_experience_cloud_ov', tier: 'g' },
+
+  // Talkdesk Travel & Leisure Experience Cloud: Overview — GENERIC (overview only)
+  { keys: ["travel", "leisure", "travel cloud", "airline"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/39594683686683-Talkdesk-Travel-Leisure-Experience-Cloud-Overview"],
+    category: 'support', group: 'talkdesk_travel_leisure_experience_cloud', tier: 'g' },
+
+  // Data Syncs: Enablement — GENERIC (overview only)
+  { keys: ["data sync", "data synchronization"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/39773699220891-Data-Syncs-Overview"],
+    category: 'support', group: 'data_syncs_enablement', tier: 'g' },
+
+  // Workspace Desktop App: FAQ — GENERIC (overview only)
+  { keys: ["desktop app", "workspace desktop app", "desktop"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/37316124696347-Workspace-Desktop-App-FAQ"],
+    category: 'support', group: 'workspace_desktop_app_faq', tier: 'g' },
+
+  // Business Continuity Planning: Overview — GENERIC (overview only)
+  { keys: ["business continuity", "disaster recovery", "failover", "resilience", "bcp"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/42130763981723-Business-Continuity-Planning-Overview"],
+    category: 'support', group: 'business_continuity_planning_overview', tier: 'g' },
+
+  // Talkdesk Customer Experience Automation (CXA): Overview — GENERIC (overview only)
+  { keys: ["customer experience automation", "cxa", "cx automation"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/40998337082267-Talkdesk-Customer-Experience-Automation-CXA-Overview"],
+    category: 'support', group: 'talkdesk_customer_experience_automation_', tier: 'g' },
+
+  // Talkdesk Scheduled Callbacks: Agents Guide — GENERIC (overview only)
+  { keys: ["scheduled callbacks", "callback scheduling", "callback request", "callback"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/45941137114907-Talkdesk-Scheduled-Callbacks-Agents-Guide", "https://support.talkdesk.com/hc/en-us/articles/45985360663067-Talkdesk-Scheduled-Callbacks-Administrators-Guide", "https://support.talkdesk.com/hc/en-us/articles/45982201487387-Talkdesk-Scheduled-Callbacks-Supervisors-Guide"],
+    category: 'support', group: 'talkdesk_scheduled_callbacks_agents_guid', tier: 'g' },
+
+  // Talkdesk Scheduled Callbacks: Agents Guide — SPECIFIC: Dialer
+  { keys: ["callbacks dialer", "callbacks with dialer"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/45986903823387-Talkdesk-Scheduled-Callbacks-Using-Scheduled-Callbacks-with-Talkdesk-Dialer"],
+    category: 'support', group: 'talkdesk_scheduled_callbacks_agents_guid', tier: 's' },
+
+  // [Preview] Talkdesk Automation Flows: List of Components — GENERIC (overview only)
+  { keys: ["automation flows", "automated flows", "workflow"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/46079705851035--Preview-Talkdesk-Automation-Flows-What-is-Supported", "https://support.talkdesk.com/hc/en-us/articles/46064358541723--Preview-Talkdesk-Automation-Flows-Overview"],
+    category: 'support', group: 'preview_talkdesk_automation_flows_list_o', tier: 'g' },
+
+  // [Preview] Talkdesk Higher Education Experience Cloud: Overview — GENERIC (overview only)
+  { keys: ["higher education", "university", "education cloud"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/46072886675099--Preview-Talkdesk-Higher-Education-Experience-Cloud-Overview"],
+    category: 'support', group: 'preview_talkdesk_higher_education_experi', tier: 'g' },
+
+  // [Preview] Talkdesk Voice Settings: Overview — GENERIC (overview only)
+  { keys: ["talkdesk voice settings", "voice network sites", "voice settings sites", "sip trunk configuration"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/47029330616603--Preview-Talkdesk-Voice-Settings-Overview", "https://support.talkdesk.com/hc/en-us/articles/47031576693915--Preview-Talkdesk-Voice-Settings-Sites-Implementation-Guide"],
+    category: 'support', group: 'preview_talkdesk_voice_settings_overview', tier: 'g' },
+
+  // Languages — standalone
+  { keys: ["language", "languages", "multilingual", "supported languages", "language support",
+           "abkhaz", "afrikaans", "albanian", "amharic", "arabic", "armenian", "azerbaijani",
+           "bashkir", "basque", "belarusian", "bengali", "bosnian", "bulgarian", "burmese",
+           "catalan", "cebuano", "chinese", "cantonese", "mandarin", "corsican", "croatian",
+           "czech", "danish", "dutch", "esperanto", "estonian", "filipino", "tagalog", "finnish",
+           "french", "frisian", "galician", "georgian", "german", "greek", "gujarati",
+           "haitian creole", "hausa", "hebrew", "hindi", "hmong", "hungarian", "icelandic",
+           "igbo", "indonesian", "irish", "italian", "japanese", "javanese", "kabyle",
+           "kannada", "kazakh", "khmer", "kinyarwanda", "korean", "kyrgyz", "lao", "latin",
+           "latvian", "lithuanian", "luganda", "luxembourgish", "macedonian", "malay",
+           "malayalam", "maltese", "maori", "marathi", "mongolian", "nepali", "norwegian",
+           "odia", "oriya", "pashto", "persian", "farsi", "polish", "portuguese", "punjabi",
+           "romanian", "russian", "samoan", "serbian", "sesotho", "shona", "sinhala",
+           "slovak", "slovenian", "somali", "spanish", "sundanese", "swahili", "swedish",
+           "tajik", "tamil", "tatar", "telugu", "thai", "turkish", "turkmen", "ukrainian",
+           "urdu", "uyghur", "uzbek", "vietnamese", "welsh", "wolof", "xhosa", "yoruba", "zulu"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/14732294347547-AI-Supported-Languages",
+      "https://support.talkdesk.com/hc/en-us/articles/24261234960795-Account-Language",
+      "https://support.talkdesk.com/hc/en-us/articles/360059474651-Copilot-Enabling-a-Transcription-Language"
+    ],
+    category: 'support', group: 'languages_standalone', tier: 'g' },
+
+  // Recording — standalone generic
+  { keys: ["recording", "call recording", "record calls"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360054368491-Talkdesk-Screen-Recording",
+      "https://support.talkdesk.com/hc/en-us/articles/204370739--Storage-and-Retention-Configuring-Retention-Policies"
+    ],
+    category: 'support', group: 'recording_standalone', tier: 'g' },
+
+  // Agent — standalone generic
+  { keys: ["talkdesk agent", "agent app", "agent workspace", "conversations app", "agent interface", " agent "],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4407159923227-What-is-Talkdesk-Agent-Workspace",
+      "https://support.talkdesk.com/hc/en-us/articles/6628805817115-Upgrading-to-Talkdesk-Workspace-FAQ"
+    ],
+    category: 'support', group: 'agent_standalone', tier: 'g' },
+
+  // Agentless — standalone generic
+  { keys: ["agentless"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/44928772098203-Talkdesk-Advanced-Dialer-Agentless-Campaign-Configuration",
+      "https://support.talkdesk.com/hc/en-us/articles/41640322190491-Talkdesk-Advanced-Dialer-Trigger-Flow-Management-for-Agentless-Voice-Campaign"
+    ],
+    category: 'support', group: 'agentless_standalone', tier: 'g' },
+
+  // Email — standalone generic entry
+  { keys: ["email", "email channel", "email support"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4416498835483-Talkdesk-Digital-Engagement-Email-Channel-for-Agents",
+      "https://support.talkdesk.com/hc/en-us/articles/4416933732251-Talkdesk-Digital-Engagement-Email-Channel-for-Administrators",
+      "https://support.talkdesk.com/hc/en-us/articles/36472246344603-Talkdesk-Digital-Engagement-Connecting-and-Authentication-Email-Channel"
+    ],
+    category: 'support', group: 'email_standalone', tier: 'g' },
+
+  // Email — specific: cases
+  { keys: ["email to case", "email case", "case from email"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/18118946746267-Creating-Connecting-or-Auto-Reopening-Cases-from-Email-Conversations"],
+    category: 'support', group: 'email_standalone', tier: 's' },
+
+  // Email — specific: dialer campaign
+  { keys: ["email campaign", "dialer email", "outbound email"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/43811071027739--Preview-Talkdesk-Advanced-Dialer-Email-Campaign"],
+    category: 'support', group: 'email_standalone', tier: 's' },
+
+  // SMS — standalone generic entry
+  { keys: ["sms", "text message", "mms", "a2p", "text messaging"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4410742762267-Talkdesk-Digital-Engagement-SMS-Channel-for-Agents",
+      "https://support.talkdesk.com/hc/en-us/articles/5669578007579-Talkdesk-Digital-Engagement-SMS-Channel-for-Administrators",
+      "https://support.talkdesk.com/hc/en-us/articles/115000745083-SMS-FAQ",
+      "https://support.talkdesk.com/hc/en-us/articles/115001117663-SMS-Legal-Best-Practices"
+    ],
+    category: 'support', group: 'sms_standalone', tier: 'g' },
+
+  // SMS — specific: campaign/dialer
+  { keys: ["sms campaign", "dialer sms", "outbound sms"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/37308985168667--Preview-Talkdesk-Advanced-Dialer-SMS-Campaign"],
+    category: 'support', group: 'sms_standalone', tier: 's' },
+
+  // SMS — specific: toll-free registration
+  { keys: ["sms registration", "toll free sms", "a2p registration", "sms texas"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/23399441161243-How-to-Register-a-Toll-Free-Number-for-SMS",
+      "https://support.talkdesk.com/hc/en-us/articles/40595066102555-Product-Notice-MMS-SMS-Registration-with-Texas-Secretary-of-State-Effective-Sep-1-2025"
+    ],
+    category: 'support', group: 'sms_standalone', tier: 's' },
+
+  // Network Test Tool — standalone (networktest.talkdesk.com)
+  { keys: ["network test", "networktest", "connection test", "mos score", "jitter", "packet loss",
+           "bandwidth test", "throughput test", "call quality test", "dns lookup", "media path",
+           "udp test", "latency test", "network diagnostic", "network check", "voice quality test"],
+    urls: [
+      "https://networktest.talkdesk.com/",
+      "https://support.talkdesk.com/hc/en-us/articles/26362442539675-Enable-Voice-Trace"
+    ],
+    category: 'support', group: 'network_test_tool', tier: 'g' },
+
+  // Screen Recording & Premium Redaction (manually added)
+  { keys: ["screen recording", "screen record", "desktop recording", "video recording", "agent screen", "screen"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/360054368491-Talkdesk-Screen-Recording"],
+    category: 'support', group: 'preview_talkdesk_voice_settings_overview', tier: 'g' },
+
+  { keys: ["redaction", "premium redaction", "pii redaction", "audio redaction", "transcript redaction", "data redaction", "sensitive data", "personally identifiable"],
+    urls: ["https://support.talkdesk.com/hc/en-us/articles/15589676704155-Interaction-Analytics-Redaction-Feature"],
+    category: 'support', group: 'preview_talkdesk_voice_settings_overview', tier: 'g' },
+
+  { keys: ["recording retention", "retention policy", "call retention", "data retention", "hybrid cloud storage", "recording storage"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/204370739--Storage-and-Retention-Configuring-Retention-Policies",
+      "https://support.talkdesk.com/hc/en-us/articles/115000353126--Storage-and-Retention-Hybrid-Cloud"
+    ],
+    category: 'support', group: 'preview_talkdesk_voice_settings_overview', tier: 'g' },
+
+  // ── GAP FILLS V39 ────────────────────────────────────────────────────────
+
+  // Call Controls — transfer, hold, mute, conference, ACW
+  { keys: ["transfer", "warm transfer", "cold transfer", "blind transfer", "consult transfer", "call transfer", "attended transfer", "unattended transfer"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4407169235739-Conversations-Voice-Channel-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/8344986700315-Conversations-Voice-Channel-Features-Guide"
+    ],
+    category: 'support', group: 'call_controls', tier: 'g' },
+
+  { keys: ["conference call", "three way call", "call merge", "conference", "add participant"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4407169235739-Conversations-Voice-Channel-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/8344986700315-Conversations-Voice-Channel-Features-Guide"
+    ],
+    category: 'support', group: 'call_controls', tier: 'g' },
+
+  { keys: ["hold", "mute", "call hold", "hold music", "call mute", "pause call"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4407169235739-Conversations-Voice-Channel-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/8344986700315-Conversations-Voice-Channel-Features-Guide"
+    ],
+    category: 'support', group: 'call_controls', tier: 'g' },
+
+  { keys: ["acw", "after call work", "wrap up code", "wrap up time", "after call", "post call work", "disposition time"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/205645679-Dispositions",
+      "https://support.talkdesk.com/hc/en-us/articles/8344986700315-Conversations-Voice-Channel-Features-Guide"
+    ],
+    category: 'support', group: 'call_controls_acw', tier: 'g' },
+
+  // Supervisor Tools — whisper, barge, monitor, supervisor
+  { keys: ["supervisor", "supervisor tools", "supervisor dashboard", "supervisor view", "supervisor panel"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360039023791-Talkdesk-Live-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/5862459555995-Live-Monitoring-Overview"
+    ],
+    category: 'support', group: 'supervisor_tools', tier: 'g' },
+
+  { keys: ["whisper", "call whisper", "whisper coaching", "silent monitor", "listen in", "listen only", "agent monitoring", "monitor call", "call monitoring", "barge", "barge in", "call barge"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/5862459555995-Live-Monitoring-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/360039023791-Talkdesk-Live-Overview"
+    ],
+    category: 'support', group: 'supervisor_tools', tier: 's' },
+
+  // Auth & Security — MFA, audit log, password
+  { keys: ["mfa", "two factor", "two factor auth", "multi factor", "multifactor", "2fa", "two-factor authentication"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/211155323-Okta-SSO-Activation",
+      "https://support.talkdesk.com/hc/en-us/articles/360005026932--Preferences-Admin-Preferences-Overview"
+    ],
+    category: 'support', group: 'auth_security', tier: 'g' },
+
+  { keys: ["audit log", "audit trail", "audit history", "activity log", "admin log", "user activity log"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/30052438106907-Security-Settings-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/360052252892-Talkdesk-Guardian-Overview"
+    ],
+    category: 'support', group: 'audit_log', tier: 'g' },
+
+  { keys: ["password reset", "forgot password", "login issues", "login problem", "can't login", "access issue", "session timeout", "session expired"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360005026932--Preferences-Admin-Preferences-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/7670620450075-Talkdesk-Admin-Overview"
+    ],
+    category: 'support', group: 'auth_login', tier: 'g' },
+
+  // Routing & IVR — skills-based, overflow, round robin
+  { keys: ["skills based routing", "skill based routing", "skills routing", "attribute routing", "competency routing"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360018298032-Talkdesk-Studio-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/360053080911-Attributes"
+    ],
+    category: 'support', group: 'routing_skills', tier: 'g' },
+
+  { keys: ["call routing", "routing strategy", "routing rules", "inbound routing", "contact routing"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360018298032-Talkdesk-Studio-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/207007006-Setting-up-an-IVR-Legacy"
+    ],
+    category: 'support', group: 'routing_general', tier: 'g' },
+
+  { keys: ["priority routing", "overflow routing", "overflow", "hunt group", "round robin", "time based routing", "schedule routing", "voice menu"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360018298032-Talkdesk-Studio-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/200617459-Setting-up-Ring-Groups-Queues"
+    ],
+    category: 'support', group: 'routing_advanced', tier: 'g' },
+
+  // Numbers — caller ID, DID, blocklist, virtual number
+  { keys: ["caller id", "caller id name", "cnam", "outbound caller id", "caller id spoofing", "ani"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/38529085065499-Numbers",
+      "https://support.talkdesk.com/hc/en-us/articles/207388056--Numbers-Configuring-a-Phone-Number"
+    ],
+    category: 'support', group: 'caller_id', tier: 'g' },
+
+  { keys: ["dnis", "dialed number", "number identification", "inbound number routing"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/38529085065499-Numbers",
+      "https://support.talkdesk.com/hc/en-us/articles/360018298032-Talkdesk-Studio-Overview"
+    ],
+    category: 'support', group: 'dnis', tier: 'g' },
+
+  { keys: ["local number", "virtual number", "local presence", "local caller id", "regional number"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/205454185-Phone-Numbers-Worldwide-Coverage",
+      "https://support.talkdesk.com/hc/en-us/articles/200503769--Numbers-Purchasing-Phone-Numbers"
+    ],
+    category: 'support', group: 'local_numbers', tier: 'g' },
+
+  { keys: ["number blocklist", "block number", "blocked numbers", "number blacklist", "call blocking"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/203219845--Preferences-Compiling-a-Blocklist-of-Phone-Numbers"
+    ],
+    category: 'support', group: 'blocklist', tier: 'g' },
+
+  { keys: ["speed dial", "extension dialing", "extension", "internal extension", "direct extension"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/200587599--Agents-Enabling-Extensions-on-Agents-and-Phone-Numbers",
+      "https://support.talkdesk.com/hc/en-us/articles/38529085065499-Numbers"
+    ],
+    category: 'support', group: 'extension', tier: 'g' },
+
+  { keys: ["number transfer", "number porting", "port in", "lnp", "local number portability"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/8769600080923-Phone-Number-Porting-Guide"
+    ],
+    category: 'support', group: 'porting_alias', tier: 'g' },
+
+  // Developer / API
+  // ── TALKDESK APIs — sourced from docs.talkdesk.com/reference/api-reference ──
+
+  // Developer Portal / General API
+  { keys: ["rest api", "api", "developer", "api key", "api docs", "openapi", "sdk", "postman", "api authentication", "api rate limit", "developer portal", "talkdesk api", "api integration", "api reference", "oauth", "oauth2", "oauth 2", "client credentials", "authorization code", "refresh token", "access token", "bearer token", "jwt"],
+    urls: [
+      "https://docs.talkdesk.com/reference/api-reference",
+      "https://docs.talkdesk.com/docs/authentication",
+      "https://docs.talkdesk.com/page/openapi-download"
+    ],
+    category: 'docs-api', group: 'api_general', tier: 'g' },
+
+  // Authentication API — specific
+  { keys: ["api authentication", "oauth token", "client credentials api", "authorization code api", "refresh token api", "jwt token", "sts token", "end user session api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/cc-jwt",
+      "https://docs.talkdesk.com/reference/cc-basic",
+      "https://docs.talkdesk.com/reference/authorization-code-jwt-post",
+      "https://docs.talkdesk.com/reference/refresh-token-jwt",
+      "https://docs.talkdesk.com/docs/authentication"
+    ],
+    category: 'docs-api', group: 'api_general', tier: 's' },
+
+  // Contacts API
+  { keys: ["contacts api", "contact api", "create contact api", "delete contact api", "contact list api", "gdpr contact api", "contact removal api", "get contact", "fetch contact", "contact by id", "contact integrations api", "contact data api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/contacts",
+      "https://docs.talkdesk.com/reference/contactscontact_id-1",
+      "https://docs.talkdesk.com/reference/contactscontact_id",
+      "https://docs.talkdesk.com/reference/contact-gdpr"
+    ],
+    category: 'docs-api', group: 'api_contacts', tier: 'g' },
+
+  // Users API
+  { keys: ["users api", "user api", "list users api", "user details api", "user info api", "agent list api", "get user", "fetch user", "user by id", "user profile api", "agent profile api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/users",
+      "https://docs.talkdesk.com/reference/usersid",
+      "https://docs.talkdesk.com/reference/usersme"
+    ],
+    category: 'docs-api', group: 'api_users', tier: 'g' },
+
+  // SCIM API
+  { keys: ["scim api", "scim provisioning api", "scim user api", "create user scim", "delete user scim", "update user scim"],
+    urls: [
+      "https://docs.talkdesk.com/reference/get-users",
+      "https://docs.talkdesk.com/reference/create-user",
+      "https://docs.talkdesk.com/reference/delete-user",
+      "https://docs.talkdesk.com/reference/update-users-attributes"
+    ],
+    category: 'docs-api', group: 'api_scim', tier: 'g' },
+
+  // Recordings API
+  { keys: ["recordings api", "recording api", "call recording api", "download recording api", "recording media api", "recording file api", "get recording", "fetch recording", "list recordings", "recording url", "recording playback api", "call audio api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/callsidrecordings",
+      "https://docs.talkdesk.com/reference/recordingsid",
+      "https://docs.talkdesk.com/reference/recordingsidmedia"
+    ],
+    category: 'docs-api', group: 'api_recordings', tier: 'g' },
+
+  // Callback API
+  { keys: ["callback api", "direct callback api", "new callback api", "outbound callback api", "create callback", "trigger callback", "initiate callback", "callback request api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/callscallback"
+    ],
+    category: 'docs-api', group: 'api_callback', tier: 'g' },
+
+  // Scheduled Callbacks API
+  { keys: ["scheduled callback api", "schedule callback api", "callback entry api", "cancel callback api", "update callback api", "query callback api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/get-a-callback-",
+      "https://docs.talkdesk.com/reference/getting-started-with-your-api-1",
+      "https://docs.talkdesk.com/reference/importing-time-off-balance-copy-1",
+      "https://docs.talkdesk.com/reference/cancel-a-callback-"
+    ],
+    category: 'docs-api', group: 'api_sched_callbacks', tier: 'g' },
+
+  // Ring Groups API
+  { keys: ["ring groups api", "ring group api", "list ring groups api", "ring group users api", "get ring group", "ring group members api", "hunt group api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/list-all-ring-groups",
+      "https://docs.talkdesk.com/reference/users-assigned-to-ring-group"
+    ],
+    category: 'docs-api', group: 'api_ring_groups', tier: 'g' },
+
+  // Flows API / Studio API
+  { keys: ["flows api", "flow api", "studio api", "execute flow api", "publish flow api", "studio flow api", "trigger flow api", "invoke flow api", "run flow api", "flow execution api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/flows-api-ref"
+    ],
+    category: 'docs-api', group: 'api_flows', tier: 'g' },
+
+  // Campaign Management API
+  { keys: ["campaign api", "campaign management api", "create campaign api", "dialer campaign api", "do not call api", "dncl api", "dnc api", "do not call list api", "outbound campaign api", "campaign list api", "ring attempts", "max attempts", "retry period", "retry attempts", "dialing ratio", "abandonment rate", "answering machine detection", "amd api", "ring time", "max ring time", "calling hours", "dialing strategy", "dialing mode", "predictive dialing api", "preview dialing api", "call disposition api", "record chain", "phone type dialing"],
+    urls: [
+      "https://docs.talkdesk.com/reference/campaigns-list",
+      "https://docs.talkdesk.com/reference/createduplicate-campaign",
+      "https://docs.talkdesk.com/reference/campaign-details",
+      "https://docs.talkdesk.com/reference/do-not-call-lists",
+      "https://docs.talkdesk.com/reference/do-not-call-lists-1"
+    ],
+    category: 'docs-api', group: 'api_campaigns', tier: 'g' },
+
+  // Record Lists API
+  { keys: ["record list api", "record lists api", "dialer record list api", "calling list api", "upload records api", "bulk records api", "create record list", "add records api", "contact list upload api", "dialing list api", "calling records api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/record-lists",
+      "https://docs.talkdesk.com/reference/record-lists-1",
+      "https://docs.talkdesk.com/reference/record-listsidrecords",
+      "https://docs.talkdesk.com/reference/record-lists-bulks"
+    ],
+    category: 'docs-api', group: 'api_record_lists', tier: 'g' },
+
+  // Attributes API
+  { keys: ["attributes api", "attribute api", "skills api", "agent skills api", "routing attributes api", "user attributes api", "create attribute", "assign skill api", "skill assignment api", "agent attribute api", "routing skill api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/attributes-list",
+      "https://docs.talkdesk.com/reference/new-attribute",
+      "https://docs.talkdesk.com/reference/attribute-users-list",
+      "https://docs.talkdesk.com/reference/associate-users-to-an-attribute"
+    ],
+    category: 'docs-api', group: 'api_attributes', tier: 'g' },
+
+  // Live API (real-time)
+  { keys: ["live api", "real time api", "real-time api", "live data api", "streaming api", "live stream api", "subscribe stream api", "live queries api", "real time data api", "agent status api real time", "queue stats api", "live metrics api", "websocket api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/list-available-queries",
+      "https://docs.talkdesk.com/reference/subscribe-to-a-new-stream",
+      "https://docs.talkdesk.com/reference/connect-to-subscription-stream"
+    ],
+    category: 'docs-api', group: 'api_live', tier: 'g' },
+
+  // Explore API (reporting)
+  { keys: ["explore api", "reporting api", "report api", "execute report api", "download report api", "historical report api", "explore report api", "run report api", "export report api", "report status api", "list reports api", "delete report api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/execute-a-report",
+      "https://docs.talkdesk.com/reference/download-a-report",
+      "https://docs.talkdesk.com/reference/all-reports-of-a-type",
+      "https://docs.talkdesk.com/reference/check-a-report-status"
+    ],
+    category: 'docs-api', group: 'api_explore', tier: 'g' },
+
+  // Reporting Custom Fields API
+  { keys: ["reporting custom fields api", "interaction custom fields api", "custom fields api", "custom data fields api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/interaction-custom-fields"
+    ],
+    category: 'docs-api', group: 'api_custom_fields', tier: 'g' },
+
+  // Guardian API
+  { keys: ["guardian api", "guardian users api", "guardian sessions api", "guardian cases api", "call quality api", "guardian call quality api", "mos score api", "session log api", "user role api", "guardian audit api", "call quality score api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/guardianusers",
+      "https://docs.talkdesk.com/reference/guardianlogssessions",
+      "https://docs.talkdesk.com/reference/guardian-cases",
+      "https://docs.talkdesk.com/reference/calls-quality"
+    ],
+    category: 'docs-api', group: 'api_guardian', tier: 'g' },
+
+  // Case API
+  { keys: ["case api", "cases api", "create case api", "update case api", "get case api", "delete case api", "case list api", "case fields api", "case note api", "case management api", "ticket api", "helpdesk api", "case details api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/create-a-new-case",
+      "https://docs.talkdesk.com/reference/update-a-case",
+      "https://docs.talkdesk.com/reference/get-case-list",
+      "https://docs.talkdesk.com/reference/get-case-details"
+    ],
+    category: 'docs-api', group: 'api_cases', tier: 'g' },
+
+  // Identity API
+  { keys: ["identity api", "voice biometrics api", "phone validation api", "voice authentication api", "biometrics api", "enrollment api", "identity insights api", "caller authentication api", "voice print api", "phone number lookup api", "phone insight api", "biometric consent api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/activities-list",
+      "https://docs.talkdesk.com/reference/identityphonevalidationsphone_number",
+      "https://docs.talkdesk.com/reference/voicebiometricscontactscontact_idenrollment",
+      "https://docs.talkdesk.com/reference/voicebiometricscontactscontact_idconsent"
+    ],
+    category: 'docs-api', group: 'api_identity', tier: 'g' },
+
+  // Digital Connect API
+  { keys: ["digital connect api", "digital api", "start conversation api", "send message api", "end conversation api", "messaging api", "chat api", "digital channel api", "omnichannel api digital", "conversation api", "create conversation api", "message api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/start-conversation",
+      "https://docs.talkdesk.com/reference/send-a-message",
+      "https://docs.talkdesk.com/reference/end-conversation"
+    ],
+    category: 'docs-api', group: 'api_digital', tier: 'g' },
+
+  // Webhook Trigger API
+  { keys: ["webhook api", "webhooks", "webhook trigger api", "event webhook", "outbound webhook", "webhook integration", "create webhook api", "delete webhook api", " webhook "],
+    urls: [
+      "https://docs.talkdesk.com/reference/create-a-webhook-trigger",
+      "https://docs.talkdesk.com/reference/delete-a-webhook-trigger",
+      "https://docs.talkdesk.com/reference/redirect-a-talkdesk-trigger",
+      "https://docs.talkdesk.com/reference/get-schema"
+    ],
+    category: 'docs-api', group: 'api_webhooks', tier: 'g' },
+
+  // Apps API
+  { keys: ["apps api", "app api", "appconnect api", "installation api", "app installation api", "credentials rotation api", "app credentials api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/appsid",
+      "https://docs.talkdesk.com/reference/appsapp_idinstallationsid",
+      "https://docs.talkdesk.com/reference/list-of-apps",
+      "https://docs.talkdesk.com/reference/credentials-rotation"
+    ],
+    category: 'docs-api', group: 'api_apps', tier: 'g' },
+
+  // Prompts API
+  { keys: ["prompts api", "prompt api", "audio prompt api", "ivr prompt api", "greeting api", "upload audio api", "audio file api", "create prompt", "manage prompts api", "prompt library api", "audio greeting api", "ivr audio api", "prompt usage api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/create-a-prompt",
+      "https://docs.talkdesk.com/reference/-update-a-prompt",
+      "https://docs.talkdesk.com/reference/list-a-prompt",
+      "https://docs.talkdesk.com/reference/download-audio-file"
+    ],
+    category: 'docs-api', group: 'api_prompts', tier: 'g' },
+
+  // Accounts API
+  { keys: ["accounts api", "account api", "account details api", "account info api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/account"
+    ],
+    category: 'docs-api', group: 'api_accounts', tier: 'g' },
+
+  // WFM APIs
+  { keys: ["wfm api", "workforce management api", "time off api", "scheduled time off api", "wfm request api", "time off balance api", "wfm integration api", "create time off api", "delete time off api", "import time off balance", "wfm time off api", "agent time off api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/create-a-time-off",
+      "https://docs.talkdesk.com/reference/update-a-time-off",
+      "https://docs.talkdesk.com/reference/delete-a-time-off",
+      "https://docs.talkdesk.com/reference/importing-time-off-balance",
+      "https://docs.talkdesk.com/reference/deleting-time-off-balance"
+    ],
+    category: 'docs-api', group: 'api_wfm', tier: 'g' },
+
+  // Bulk Import API
+  { keys: ["bulk import api", "import api", "bulk data import api", "contact import api", "data import api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/get-list-of-imports",
+      "https://docs.talkdesk.com/reference/create-new-import",
+      "https://docs.talkdesk.com/reference/get-an-import"
+    ],
+    category: 'docs-api', group: 'api_bulk_import', tier: 'g' },
+
+  // Omnichannel API
+  { keys: ["omnichannel api", "omnichannel delete api", "bulk delete interactions api", "interaction delete api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/bulk-delete-interactions"
+    ],
+    category: 'docs-api', group: 'api_omnichannel', tier: 'g' },
+
+  // Feedback / CFM API
+  { keys: ["feedback api", "cfm api", "csat api", "survey api", "collect feedback api", "nps api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/collect-feedback-data"
+    ],
+    category: 'docs-api', group: 'api_feedback', tier: 'g' },
+
+  // Simulated Email API
+  { keys: ["simulated email api", "send email api", "email api", "test email api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/send-a-simulated-message"
+    ],
+    category: 'docs-api', group: 'api_email', tier: 'g' },
+
+  // Usage Manager / Billing API
+  { keys: ["usage api", "billing api", "wallet api", "usage manager api", "billing insights api", "account wallet api", "subscription api billing", "invoice api", "monthly usage api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/account-wallet-list",
+      "https://docs.talkdesk.com/reference/billing-insights-get-accounts",
+      "https://docs.talkdesk.com/reference/billing-insights-get-invoices",
+      "https://docs.talkdesk.com/reference/billing-insights-get-monthly-usage"
+    ],
+    category: 'docs-api', group: 'api_billing', tier: 'g' },
+
+  // Express API
+  { keys: ["express api", "talkdesk express api", "reseller api", "partner api", "contract api", "trial api", "instantiate trial api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/create-contract-actions",
+      "https://docs.talkdesk.com/reference/get-contract-actions",
+      "https://docs.talkdesk.com/reference/get-reseller-contract-information",
+      "https://docs.talkdesk.com/reference/instantiate-a-trial"
+    ],
+    category: 'docs-api', group: 'api_express', tier: 'g' },
+
+  // Retail / ERC Ecommerce API
+  { keys: ["retail api", "ecommerce api", "erc api", "shopify api", "order api", "customer order api", "cart api", "product search api", "retail ecommerce api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/integrations-customer-by-id",
+      "https://docs.talkdesk.com/reference/customer-orders-provided-by-the-customer-id",
+      "https://docs.talkdesk.com/reference/search-the-products-of-the-store",
+      "https://docs.talkdesk.com/reference/cancel-a-customers-order"
+    ],
+    category: 'docs-api', group: 'api_retail', tier: 'g' },
+
+  // FSI Banking API
+  { keys: ["banking api", "fsi api", "financial services api", "bank member api", "bank transaction api", "bank payment api", "bank card api", "transfer api banking"],
+    urls: [
+      "https://docs.talkdesk.com/reference/get-member-data",
+      "https://docs.talkdesk.com/reference/get-payment-data",
+      "https://docs.talkdesk.com/reference/get-transaction-data",
+      "https://docs.talkdesk.com/reference/get-cardscard-details"
+    ],
+    category: 'docs-api', group: 'api_fsi_banking', tier: 'g' },
+
+  // FSI Insurance API
+  { keys: ["insurance api", "fsi insurance api", "policy api", "claims api", "insurance claims api", "insurance policy api", "quick quote api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/get-accounts",
+      "https://docs.talkdesk.com/reference/get-policy-details-by-account-number",
+      "https://docs.talkdesk.com/reference/get-claims-for-an-account-number",
+      "https://docs.talkdesk.com/reference/creates-a-new-claim",
+      "https://docs.talkdesk.com/reference/create-a-new-quick-quote"
+    ],
+    category: 'docs-api', group: 'api_fsi_insurance', tier: 'g' },
+
+  // Industries Scheduler API
+  { keys: ["scheduler api", "appointment api", "calendar api", "create appointment api", "availability api", "calendar event api", "industries scheduler api"],
+    urls: [
+      "https://docs.talkdesk.com/reference/get-appointments",
+      "https://docs.talkdesk.com/reference/collecting-user-availability",
+      "https://docs.talkdesk.com/reference/create-calendar-event"
+    ],
+    category: 'docs-api', group: 'api_scheduler', tier: 'g' },
+
+  // Reporting gaps — export, historical, real-time
+  { keys: ["data export", "csv export", "export data", "download data", "export calls", "bulk export"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360027457832-Downloading-and-Sending-Reports",
+      "https://support.talkdesk.com/hc/en-us/articles/360026711371-Downloading-and-Sending-Dashboards"
+    ],
+    category: 'support', group: 'reporting_export', tier: 'g' },
+
+  { keys: ["historical reporting", "historical report", "historical data", "past calls report", "call history report"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360026412572-Talkdesk-Explore-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/360032266452-Creating-Custom-Reports-in-Talkdesk-Explore"
+    ],
+    category: 'support', group: 'reporting_historical', tier: 'g' },
+
+  { keys: ["real time analytics", "real time reporting", "real-time", "live analytics", "live reporting", "live metrics"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360039023791-Talkdesk-Live-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/5862459555995-Live-Monitoring-Overview"
+    ],
+    category: 'support', group: 'reporting_realtime', tier: 'g' },
+
+  { keys: ["custom reporting", "report builder", "call volume report", "wallboard display", "wallboard setup", "kpi dashboard"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360032266452-Creating-Custom-Reports-in-Talkdesk-Explore",
+      "https://support.talkdesk.com/hc/en-us/articles/360039023791-Talkdesk-Live-Overview"
+    ],
+    category: 'support', group: 'reporting_custom', tier: 'g' },
+
+  // AI / NLP — TTS, ASR, NLU, custom vocab
+  { keys: ["nlu", "natural language understanding", "intent detection", "intent recognition", "entity extraction", "named entity"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4402552489613-Getting-Started-with-Talkdesk-Operations-Center-for-CXA",
+      "https://support.talkdesk.com/hc/en-us/articles/4406172628635-Training-Intent-Detection-Models-in-Talkdesk-CXA-Operations-Center"
+    ],
+    category: 'support', group: 'ai_nlu', tier: 'g' },
+
+  { keys: ["tts", "text to speech", "voice synthesis", "speech synthesis", "tts engine"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/10440836447899-Automation-Designer-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/10441456119579-Automation-Designer-Say-Component"
+    ],
+    category: 'support', group: 'ai_tts', tier: 'g' },
+
+  { keys: ["asr", "speech recognition", "automatic speech recognition", "speech to text", "stt", "transcription engine"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4406577904923-Training-Speech-to-Text-Models-in-Talkdesk-CXA-Operations-Center",
+      "https://support.talkdesk.com/hc/en-us/articles/360045123011-Copilot-Overview"
+    ],
+    category: 'support', group: 'ai_asr', tier: 'g' },
+
+  { keys: ["custom vocabulary", "custom vocab", "custom words", "vocabulary model", "word boost", "hotwords"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4406577904923-Training-Speech-to-Text-Models-in-Talkdesk-CXA-Operations-Center",
+      "https://support.talkdesk.com/hc/en-us/articles/14732294347547-AI-Supported-Languages"
+    ],
+    category: 'support', group: 'ai_vocab', tier: 'g' },
+
+  { keys: ["voice bot", "voicebot", "noise cancellation", "background noise", "echo cancellation", "audio quality", "noise suppression"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4405087529883-Autopilot-Voice-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/18935871264155-Types-of-User-Network-Connections"
+    ],
+    category: 'support', group: 'ai_voice_quality', tier: 'g' },
+
+  // Digital / Omnichannel gaps
+  { keys: ["omni channel", "omnichannel routing", "multichannel", "multi-channel", "channel blending", "unified routing", "all channels"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4453692379163-Talkdesk-Digital-Engagement-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/4416787592731-Talkdesk-Digital-Engagement-FAQ"
+    ],
+    category: 'support', group: 'omnichannel', tier: 'g' },
+
+  { keys: ["cobrowse", "co browse", "co-browse", "screen share", "screen sharing", "video call", "video channel", "co-browsing"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4453692379163-Talkdesk-Digital-Engagement-Overview"
+    ],
+    category: 'support', group: 'cobrowse', tier: 'g' },
+
+  { keys: ["messaging channel", "messaging", "async messaging", "asynchronous messaging"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4453692379163-Talkdesk-Digital-Engagement-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/4416787592731-Talkdesk-Digital-Engagement-FAQ"
+    ],
+    category: 'support', group: 'messaging_channel', tier: 'g' },
+
+  // Dialer / Outbound gaps
+  { keys: ["auto dialer", "autodialer", "automatic dialer", "robocall", "robo dialer", "automated calling"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/24876859856155-Talkdesk-Advanced-Dialer-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/9865745786267-Answering-Machine-Detection-AMD-Overview"
+    ],
+    category: 'support', group: 'auto_dialer', tier: 'g' },
+
+  { keys: ["contact list upload", "upload contact list", "call list management", "import dialer list", "dialer contacts", "answer rate", "connect rate", "hit rate"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/15394856333339-Managing-Lists-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/200703929-Uploading-Contacts-with-Contact-Importer"
+    ],
+    category: 'support', group: 'dialer_list_mgmt', tier: 'g' },
+
+  { keys: ["outbound calling", "outbound call", "make outbound", "place call", "initiate call"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4407169235739-Conversations-Voice-Channel-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/13240536285211-Preview-Dialer-Overview"
+    ],
+    category: 'support', group: 'outbound_calling', tier: 'g' },
+
+  // Agent Experience gaps
+  { keys: ["agent status", "agent state", "availability", "available", "busy", "away", "offline status", "presence status", "agent presence", " presence ", "ready state"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4407159923227-What-is-Talkdesk-Agent-Workspace",
+      "https://support.talkdesk.com/hc/en-us/articles/360000193143-Teams-Section-Overview"
+    ],
+    category: 'support', group: 'agent_status', tier: 'g' },
+
+  { keys: ["concurrent calls", "simultaneous calls", "call capacity", "max calls", "agent capacity", "calls per agent"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360000193143-Teams-Section-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/204370859-Setting-up-Talkdesk-Requirements-Best-Practices"
+    ],
+    category: 'support', group: 'concurrent_calls', tier: 'g' },
+
+  { keys: ["screen pop", "contact pop", "customer pop", "auto pop", "screen pop up"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4407159923227-What-is-Talkdesk-Agent-Workspace",
+      "https://support.talkdesk.com/hc/en-us/articles/8344986700315-Conversations-Voice-Channel-Features-Guide"
+    ],
+    category: 'support', group: 'screen_pop', tier: 'g' },
+
+  { keys: ["contact history", "interaction history", "call history", "customer history", "previous interactions", "past conversations"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4407199186843-Activities",
+      "https://support.talkdesk.com/hc/en-us/articles/4407159923227-What-is-Talkdesk-Agent-Workspace"
+    ],
+    category: 'support', group: 'contact_history', tier: 'g' },
+
+  { keys: ["call notes", "call comments", "agent notes", "interaction notes", "add notes", "note taking"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4407169235739-Conversations-Voice-Channel-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/8344986700315-Conversations-Voice-Channel-Features-Guide"
+    ],
+    category: 'support', group: 'call_notes', tier: 'g' },
+
+  { keys: ["missed call", "missed calls", "unanswered call", "abandoned call", "abandoned calls", "missed contact", "dropped call"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/4409581637787-Abandon-Rate",
+      "https://support.talkdesk.com/hc/en-us/articles/360039023791-Talkdesk-Live-Overview"
+    ],
+    category: 'support', group: 'missed_calls', tier: 'g' },
+
+  // Cases / Ticketing gaps
+  { keys: ["case escalation", "escalate case", "case priority", "case auto-assignment", "auto assign case", "case assignment rules"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/5346045641627-Talkdesk-Cases-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/7010736916251-Event-based-Automation-Overview"
+    ],
+    category: 'support', group: 'case_mgmt_adv', tier: 'g' },
+
+  // Compliance / Legal gaps
+  { keys: ["tcpa", "telephone consumer protection", "do not call", "consent management", "opt out", "call consent"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/12206639625371-Adding-a-record-to-DNCL-in-Conversations",
+      "https://support.talkdesk.com/hc/en-us/articles/115001117663-SMS-Legal-Best-Practices"
+    ],
+    category: 'support', group: 'tcpa', tier: 'g' },
+
+  { keys: ["ccpa", "california privacy", "data subject request", "right to erasure", "right to be forgotten", "data deletion request", "data residency", "data sovereignty", "sox", "sarbanes oxley"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360004095931-Talkdesk-and-GDPR",
+      "https://support.talkdesk.com/hc/en-us/articles/360041380971-Talkdesk-Secure-Payments"
+    ],
+    category: 'support', group: 'data_privacy_laws', tier: 'g' },
+
+  // WFM gaps
+  { keys: ["shrinkage", "occupancy", "intraday management", "intraday", "real-time adherence", "schedule adherence live", "shift swap", "shift trade", "vacation request", "time off request", "attendance", "agent availability forecast", "wfm real time"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360043948512-Workforce-Management-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/39532513549211-Workforce-Management-Forecasting",
+      "https://support.talkdesk.com/hc/en-us/articles/44290701272731--Preview-WFM-Agents-Live-Adherence"
+    ],
+    category: 'support', group: 'wfm_gaps', tier: 'g' },
+
+  // Ring groups / queues
+  { keys: ["ring group", "ring groups", "call group", "agent group", "group routing"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/200617459-Setting-up-Ring-Groups-Queues"
+    ],
+    category: 'support', group: 'ring_groups', tier: 'g' },
+
+  // License / subscription
+  { keys: ["license", "seat", "seats", "subscription", "license management", "add user license", "user seat"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/8265653015195-Subscription-Tab-Adding-Licenses-and-Managing-Seats"
+    ],
+    category: 'support', group: 'license_mgmt', tier: 'g' },
+
+  // Contact import
+  { keys: ["import contacts", "bulk import", "contact upload", "csv contacts", "contact csv"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/200703929-Uploading-Contacts-with-Contact-Importer"
+    ],
+    category: 'support', group: 'contact_import', tier: 'g' },
+
+  // Business continuity
+  { keys: ["disaster recovery", "business continuity", "failover", "redundancy", "resilience", "bcp", "backup", "high availability"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/42130763981723-Business-Continuity-Planning-Overview"
+    ],
+    category: 'support', group: 'bcp_alias', tier: 'g' },
+
+  // Sentiment score alias
+  { keys: ["sentiment score", "sentiment rating", "emotion detection", "mood detection", "tone detection"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/360058760372-Interaction-Analytics-Overview",
+      "https://support.talkdesk.com/hc/en-us/articles/36183053530651-Customer-Experience-Analytics-Starter-Overview"
+    ],
+    category: 'support', group: 'sentiment_score', tier: 'g' },
+
+  // Onboarding / setup aliases
+  { keys: ["onboarding", "getting started", "initial setup", "setup guide", "deployment", "implementation"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/204370859-Setting-up-Talkdesk-Requirements-Best-Practices"
+    ],
+    category: 'support', group: 'onboarding', tier: 'g' },
+
+  // BYOC / SIP trunk
+  { keys: ["byoc", "bring your own carrier", "sip trunk", "sip trunking", "carrier", "telco", "pstn", "direct routing"],
+    urls: [
+      "https://support.talkdesk.com/hc/en-us/articles/40995448511259-Talkdesk-CXA-for-any-contact-center-FAQ",
+      "https://support.talkdesk.com/hc/en-us/articles/47029330616603--Preview-Talkdesk-Voice-Settings-Overview"
+    ],
+    category: 'support', group: 'byoc_alias', tier: 'g' },
+
+];
+
+// ============================================================
+// PROCESSING
+// ============================================================
+const categoryLabels = {
+    'studio':          '📐 Studio Components & Flows',
+    'integrations':    '🔗 Integrations (Support Portal)',
+    'appconnect':      '🏪 AppConnect Marketplace',
+    'data-dictionary': '📊 Data Dictionary',
+    'docs-api':        '🛠 Developer Docs & APIs',
+    'support':         '📚 Support Knowledge Base'
+};
+const categoryOrder = ['studio', 'integrations', 'appconnect', 'data-dictionary', 'docs-api', 'support'];
+
+// Store last results so copy functions can access them
+let lastResults = {};
+
+function processQuery() {
+    const input = ' ' + document.getElementById('userInput').value.toLowerCase() + ' ';
+    if (!input.trim()) {
+        showPlaceholder('Please enter a question or requirements above.');
+        return;
+    }
+
+    // Group-based suppression: if any tier:'s' (specific) entry from a group fires,
+    // suppress all tier:'g' (generic) entries from the same group.
+
+    // Pass 1: collect all matches and the set of groups that have a specific hit
+    const allMatches = [];
+    const groupsWithSpecificHit = new Set();
+
+    docMap.forEach(item => {
+        if (activeFilter !== 'all' && item.category !== activeFilter) return;
+        if (item.keys.some(k => input.includes(k))) {
+            allMatches.push(item);
+            if (item.tier === 's') groupsWithSpecificHit.add(item.group);
+        }
+    });
+
+    // Pass 2: build results, skipping generic entries whose group has a specific hit
+    const matchedByCategory = {};
+    allMatches.forEach(item => {
+        if (item.tier === 'g' && item.group && groupsWithSpecificHit.has(item.group)) return;
+        if (!matchedByCategory[item.category]) matchedByCategory[item.category] = new Set();
+        item.urls.forEach(u => matchedByCategory[item.category].add(u));
+    });
+
+    let totalLinks = 0;
+    categoryOrder.forEach(c => { if (matchedByCategory[c]) totalLinks += matchedByCategory[c].size; });
+
+    if (totalLinks === 0) {
+        lastResults = {};
+        showPlaceholder('No specific documentation found.\n\nGeneral resources:\n• https://support.talkdesk.com/hc/en-us\n• https://docs.talkdesk.com/\n• https://studio.talkdesk.com/docs/talkdesk-studio-intro\n• https://appconnect.talkdesk.com/\n• https://data-dictionary.talkdesk.com/');
+        document.getElementById('matchCount').style.display = 'none';
+        return;
+    }
+
+    lastResults = matchedByCategory;
+    renderSections(matchedByCategory);
+
+    const countEl = document.getElementById('matchCount');
+    countEl.style.display = 'block';
+    countEl.textContent = `✓ ${totalLinks} relevant link${totalLinks !== 1 ? 's' : ''} found across ${Object.keys(matchedByCategory).length} section${Object.keys(matchedByCategory).length !== 1 ? 's' : ''}`;
+}
+
+function renderSections(matchedByCategory) {
+    const sectionsEl = document.getElementById('outputSections');
+    const placeholder = document.getElementById('outputPlaceholder');
+    const actionsBar = document.getElementById('outputActions');
+
+    placeholder.style.display = 'none';
+    actionsBar.style.display = 'flex';
+    sectionsEl.innerHTML = '';
+
+    categoryOrder.forEach(cat => {
+        if (!matchedByCategory[cat]) return;
+        const urls = Array.from(matchedByCategory[cat]);
+        const label = categoryLabels[cat];
+
+        const section = document.createElement('div');
+        section.className = 'result-section';
+        section.dataset.cat = cat;
+
+        const header = document.createElement('div');
+        header.className = 'result-section-header';
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'result-section-label';
+        labelEl.textContent = label;
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'section-copy-btn';
+        copyBtn.textContent = 'Copy Section';
+        copyBtn.onclick = () => copySectionByEl(copyBtn, label, urls);
+
+        header.appendChild(labelEl);
+        header.appendChild(copyBtn);
+
+        const urlsEl = document.createElement('div');
+        urlsEl.className = 'result-section-urls';
+        urlsEl.textContent = urls.map(u => '• ' + u).join('\n');
+
+        section.appendChild(header);
+        section.appendChild(urlsEl);
+        sectionsEl.appendChild(section);
+    });
+
+    // Reset copy-all button
+    const copyAllBtn = document.getElementById('copyAllBtn');
+    copyAllBtn.textContent = '⎘ Copy All';
+    copyAllBtn.classList.remove('copied');
+}
+
+function showPlaceholder(msg) {
+    document.getElementById('outputSections').innerHTML = '';
+    document.getElementById('outputActions').style.display = 'none';
+    const ph = document.getElementById('outputPlaceholder');
+    ph.style.display = 'block';
+    ph.style.textAlign = 'left';
+    ph.style.whiteSpace = 'pre-wrap';
+    ph.style.fontFamily = "'Courier New', monospace";
+    ph.style.fontSize = '12px';
+    ph.style.color = '#888';
+    ph.style.padding = '16px 4px';
+    ph.textContent = msg;
+}
+
+// ============================================================
+// COPY FUNCTIONS
+// ============================================================
+function copySectionByEl(btn, label, urls) {
+    const text = `— ${label} —\n` + urls.map(u => '• ' + u).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'Copy Section';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+function copyAll() {
+    if (!Object.keys(lastResults).length) return;
+    let text = 'For more information please review our documentation:\n\n';
+    categoryOrder.forEach(cat => {
+        if (!lastResults[cat]) return;
+        text += `— ${categoryLabels[cat]} —\n`;
+        text += Array.from(lastResults[cat]).map(u => '• ' + u).join('\n');
+        text += '\n\n';
+    });
+    navigator.clipboard.writeText(text.trim()).then(() => {
+        const btn = document.getElementById('copyAllBtn');
+        btn.textContent = '✓ All Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = '⎘ Copy All';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+function clearAll() {
+    document.getElementById('userInput').value = '';
+    lastResults = {};
+    document.getElementById('outputSections').innerHTML = '';
+    document.getElementById('outputActions').style.display = 'none';
+    document.getElementById('matchCount').style.display = 'none';
+    const ph = document.getElementById('outputPlaceholder');
+    ph.style.display = 'block';
+    ph.style.textAlign = 'center';
+    ph.style.whiteSpace = 'normal';
+    ph.style.fontFamily = 'inherit';
+    ph.style.fontSize = '13px';
+    ph.style.color = '#bbb';
+    ph.style.padding = '40px 10px';
+    ph.textContent = 'Documentation links will generate based on your input above...';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('userInput').addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'Enter') { processQuery(); }
+    });
+});
+</script>
+</body>
+</html>
